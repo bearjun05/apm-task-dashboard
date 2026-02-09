@@ -1,0 +1,48 @@
+'use client'
+
+import { DashboardHeader } from '@/components/dashboard/header'
+import { TimePanel } from '@/components/dashboard/time-panel'
+import { TodayPanel } from '@/components/dashboard/today-panel'
+import { WeekChapterCalendar } from '@/components/dashboard/week-calendar'
+import { NoticeSection } from '@/components/dashboard/notice-section'
+import { IssueSection } from '@/components/dashboard/issue-section'
+
+export default function Page() {
+  return (
+    <div className="flex h-screen flex-col bg-background">
+      <DashboardHeader />
+
+      <div className="flex min-h-0 flex-1">
+        {/* Left: Time-based panel (2/10) */}
+        <div className="w-[20%] shrink-0">
+          <TimePanel />
+        </div>
+
+        {/* Left: Today todo panel (2/10) */}
+        <div className="w-[20%] shrink-0">
+          <TodayPanel />
+        </div>
+
+        {/* Right section (6/10) */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Calendar (top half) */}
+          <div className="h-1/2 border-b border-gray-200">
+            <WeekChapterCalendar />
+          </div>
+
+          {/* Notice & Issue (bottom half) */}
+          <div className="flex h-1/2 min-h-0">
+            {/* Notices (60%) */}
+            <div className="w-[60%] border-r border-gray-200">
+              <NoticeSection />
+            </div>
+            {/* Issues (40%) */}
+            <div className="w-[40%]">
+              <IssueSection />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
