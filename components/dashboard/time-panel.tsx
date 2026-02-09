@@ -27,7 +27,7 @@ export function TimePanel() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden border-r border-gray-200 bg-card">
-      <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3">
+      <div className="flex h-12 shrink-0 items-center gap-2 border-b border-gray-200 px-4">
         <Clock className="h-4 w-4 text-gray-500" />
         <h2 className="text-sm font-semibold tracking-tight text-gray-900">
           {'시간 기반 Task'}

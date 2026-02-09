@@ -27,12 +27,7 @@ function isSameDay(d1: Date, d2: Date): boolean {
   )
 }
 
-const categoryColors: Record<CalendarEvent['category'], { bg: string; text: string }> = {
-  assignment: { bg: 'bg-amber-50', text: 'text-amber-700' },
-  project: { bg: 'bg-emerald-50', text: 'text-emerald-700' },
-  evaluation: { bg: 'bg-red-50', text: 'text-red-700' },
-  general: { bg: 'bg-blue-50', text: 'text-blue-700' },
-}
+const EVENT_STYLE = { bg: 'bg-blue-50 border border-blue-200/60', text: 'text-blue-700' }
 
 interface DateModalProps {
   date: Date
@@ -74,19 +69,16 @@ function DateModal({ date, events, onClose }: DateModalProps) {
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                 {'트랙 일정'}
               </p>
-              {events.map((event) => {
-                const colors = categoryColors[event.category]
-                return (
+              {events.map((event) => (
                   <div
                     key={event.id}
-                    className={cn('mb-1.5 rounded-md px-3 py-2', colors.bg)}
+                    className={cn('mb-1.5 rounded-md px-3 py-2', EVENT_STYLE.bg)}
                   >
-                    <span className={cn('text-sm font-medium', colors.text)}>
+                    <span className={cn('text-sm font-medium', EVENT_STYLE.text)}>
                       {event.title}
                     </span>
                   </div>
-                )
-              })}
+                ))}
             </div>
           )}
 
@@ -202,7 +194,7 @@ export function WeekChapterCalendar() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Toggle */}
-      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+      <div className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 px-4">
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-gray-500" />
           <h2 className="text-sm font-semibold tracking-tight text-gray-900">{'캘린더'}</h2>
@@ -282,21 +274,18 @@ export function WeekChapterCalendar() {
                   </div>
 
                   {/* Track events */}
-                  {events.map((event) => {
-                    const colors = categoryColors[event.category]
-                    return (
+                  {events.map((event) => (
                       <div
                         key={event.id}
                         className={cn(
                           'mb-1 rounded px-2 py-1 text-[11px] font-medium',
-                          colors.bg,
-                          colors.text,
+                          EVENT_STYLE.bg,
+                          EVENT_STYLE.text,
                         )}
                       >
                         {event.title}
                       </div>
-                    )
-                  })}
+                    ))}
 
                   {/* Separator */}
                   {events.length > 0 && tasks.length > 0 && (
@@ -381,21 +370,18 @@ export function WeekChapterCalendar() {
                         >
                           {date.getDate()}
                         </span>
-                        {events.map((event) => {
-                          const colors = categoryColors[event.category]
-                          return (
+                        {events.map((event) => (
                             <div
                               key={event.id}
                               className={cn(
                                 'mb-0.5 truncate rounded px-1 py-0.5 text-[10px] font-medium',
-                                colors.bg,
-                                colors.text,
+                                EVENT_STYLE.bg,
+                                EVENT_STYLE.text,
                               )}
                             >
                               {event.title}
                             </div>
-                          )
-                        })}
+                          ))}
                       </button>
                     )
                   })}
