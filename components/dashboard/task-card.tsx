@@ -379,7 +379,7 @@ export function TaskCard({
                 ? 'text-amber-400'
                 : 'text-gray-300 hover:text-gray-400',
             )}
-            aria-label={task.isImportant ? '중요 표시 해제' : '중요 표시'}
+            aria-label={task.isImportant ? '중��� 표시 해제' : '중요 표시'}
           >
             <Star
               className={cn('h-4 w-4', task.isImportant && 'fill-current')}
@@ -446,32 +446,31 @@ export function TaskCard({
             )}
           </div>
 
-          {/* Badge: chat bubble with request count */}
-          {requestCount > 0 && (
-            <div className="relative shrink-0">
-              <MessageCircle className="h-5 w-5 text-primary" />
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                {requestCount}
-              </span>
-            </div>
-          )}
         </div>
 
-        {/* Bottom indicators */}
-        <div className="mt-2 flex items-center gap-2 border-t border-gray-100 pt-2">
-          {task.attachments && task.attachments.length > 0 && (
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <Paperclip className="h-3 w-3" />
-              <span>{task.attachments.length}</span>
-            </div>
-          )}
-          {task.chatMessages.length > 0 && requestCount === 0 && (
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <MessageCircle className="h-3 w-3" />
-              <span>{task.chatMessages.length}</span>
-            </div>
-          )}
-        </div>
+        {/* Bottom indicators (clip-style: small icon + number) */}
+        {(requestCount > 0 || (task.attachments && task.attachments.length > 0) || task.chatMessages.length > 0) && (
+          <div className="mt-2 flex items-center gap-3 border-t border-gray-100 pt-2">
+            {task.attachments && task.attachments.length > 0 && (
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <Paperclip className="h-3 w-3" />
+                <span>{task.attachments.length}</span>
+              </div>
+            )}
+            {requestCount > 0 && (
+              <div className="flex items-center gap-1 text-xs text-primary">
+                <MessageCircle className="h-3 w-3" />
+                <span className="font-medium">{requestCount}</span>
+              </div>
+            )}
+            {task.chatMessages.length > 0 && requestCount === 0 && (
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <MessageCircle className="h-3 w-3" />
+                <span>{task.chatMessages.length}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}
