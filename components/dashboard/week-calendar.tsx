@@ -6,6 +6,7 @@ import { mockCalendarEvents, mockChapterEvents, mockTodayTasks } from '@/lib/moc
 import type { CalendarEvent } from '@/lib/types'
 import { Calendar, ChevronRight, X, Plus } from 'lucide-react'
 import { useDashboardStore } from '@/lib/store'
+import { useEffect } from 'react'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -167,12 +168,16 @@ function DateModal({ date, events, onClose }: DateModalProps) {
 export function WeekChapterCalendar() {
   const [view, setView] = useState<'week' | 'chapter'>('week')
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [today, setToday] = useState<Date | null>(null)
 
-  const today = new Date()
-  const weekDays = Array.from({ length: 5 }, (_, i) => addDays(today, i))
+  useEffect(() => {
+    setToday(new Date())
+  }, [])
 
-  // Chapter calendar: show 3 weeks centered around today
-  const chapterStart = addDays(today, -3)
+  const safeToday = today ?? new Date(2026, 1, 9) // fallback for SSR, will be replaced on mount
+  const weekDays = Array.from({ length: 5 }, (_, i) => addDays(safeToday, i))
+
+  const chapterStart = addDays(safeToday, -3)
   const chapterWeeks: Date[][] = []
   for (let w = 0; w < 3; w++) {
     const week: Date[] = []
@@ -326,7 +331,7 @@ export function WeekChapterCalendar() {
                 {'챕터 3 기간'}
               </p>
               <p className="text-xs text-gray-400">
-                {`${formatDate(addDays(today, -3))} ~ ${formatDate(addDays(today, 14))}`}
+                {`${formatDate(addDays(safeToday, -3))} ~ ${formatDate(addDays(safeToday, 14))}`}
               </p>
             </div>
 
@@ -348,7 +353,7 @@ export function WeekChapterCalendar() {
                 <div key={wIdx} className="grid grid-cols-7 border-b border-gray-100 last:border-0">
                   {week.map((date) => {
                     const events = getEventsForDate(date, mockChapterEvents)
-                    const isCurrentDay = isSameDay(date, today)
+                    const isCurrentDay = isSameDay(date, safeToday)
 
                     return (
                       <button

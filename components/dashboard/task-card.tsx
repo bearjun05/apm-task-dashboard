@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useDashboardStore } from '@/lib/store'
 import type { Task } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface TaskCardProps {
   task: Task
@@ -21,7 +21,7 @@ function getDDay(endDate: string): number {
   return Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-function isOverdue(task: Task): boolean {
+function checkOverdue(task: Task): boolean {
   if (task.isCompleted) return false
   if (!task.dueTime) return false
   const now = new Date()
@@ -36,8 +36,12 @@ export function TaskCard({ task, compact = false, showTime = false }: TaskCardPr
   const [showDetail, setShowDetail] = useState(false)
   const [showChat, setShowChat] = useState(false)
   const [detailText, setDetailText] = useState(task.detailContent || '')
+  const [overdue, setOverdue] = useState(false)
 
-  const overdue = isOverdue(task)
+  useEffect(() => {
+    setOverdue(checkOverdue(task))
+  }, [task])
+
   const dDay = task.endDate ? getDDay(task.endDate) : null
 
   if (compact) {
@@ -70,10 +74,11 @@ export function TaskCard({ task, compact = false, showTime = false }: TaskCardPr
   return (
     <div
       className={cn(
-        'group rounded-lg border border-gray-200 bg-card p-3 transition-all duration-200',
-        'hover:border-gray-300 hover:shadow-sm',
+        'group rounded-lg border bg-card p-3 transition-all duration-200',
+        overdue && !task.isCompleted
+          ? 'border-destructive/50 bg-red-50/30'
+          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm',
         task.isCompleted && 'border-gray-200 bg-gray-50 opacity-70',
-        overdue && !task.isCompleted && 'border-2 border-destructive',
       )}
     >
       <div className="flex items-start gap-2">

@@ -5,6 +5,7 @@ import { TaskCard } from './task-card'
 import type { Task } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { Clock } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 const HOURS = Array.from({ length: 10 }, (_, i) => i + 9) // 9:00 ~ 18:00
 
@@ -22,8 +23,11 @@ function groupTasksByHour(tasks: Task[]): Record<number, Task[]> {
 export function TimePanel() {
   const { timedTasks } = useDashboardStore()
   const grouped = groupTasksByHour(timedTasks)
+  const [currentHour, setCurrentHour] = useState(-1)
 
-  const currentHour = new Date().getHours()
+  useEffect(() => {
+    setCurrentHour(new Date().getHours())
+  }, [])
 
   return (
     <div className="flex h-full flex-col overflow-hidden border-r border-gray-200 bg-card">

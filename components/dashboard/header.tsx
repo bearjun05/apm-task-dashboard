@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react'
 export function DashboardHeader() {
   const { timedTasks, todayTasks, notices } = useDashboardStore()
   const [showNotifDropdown, setShowNotifDropdown] = useState(false)
+  const [dateStr, setDateStr] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const allTasks = [...timedTasks, ...todayTasks]
@@ -16,9 +17,11 @@ export function DashboardHeader() {
 
   const unreadNotices = notices.filter((n) => !n.isRead)
 
-  const today = new Date()
-  const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
-  const dateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${dayNames[today.getDay()]}`
+  useEffect(() => {
+    const today = new Date()
+    const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
+    setDateStr(`${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${dayNames[today.getDay()]}`)
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

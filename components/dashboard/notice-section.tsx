@@ -9,12 +9,11 @@ import {
   CornerDownLeft,
   Send,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-function timeAgo(timestamp: string): string {
-  const now = new Date().getTime()
+function formatTimeAgo(timestamp: string, now: number): string {
   const then = new Date(timestamp).getTime()
-  const diff = Math.floor((now - then) / 60000) // minutes
+  const diff = Math.floor((now - then) / 60000)
   if (diff < 1) return '방금 전'
   if (diff < 60) return `${diff}분 전`
   const hours = Math.floor(diff / 60)
@@ -27,6 +26,11 @@ export function NoticeSection() {
   const { notices, markNoticeRead, addNoticeReply } = useDashboardStore()
   const [expandedNotice, setExpandedNotice] = useState<string | null>(null)
   const [replyText, setReplyText] = useState('')
+  const [now, setNow] = useState(0)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
 
   const sortedNotices = [...notices].sort((a, b) => {
     if (a.isRead !== b.isRead) return a.isRead ? 1 : -1
@@ -68,7 +72,7 @@ export function NoticeSection() {
                     </span>
                   )}
                   <span className="text-xs text-gray-500">{notice.authorName}</span>
-                  <span className="text-xs text-gray-400">{timeAgo(notice.timestamp)}</span>
+                  <span className="text-xs text-gray-400">{now ? formatTimeAgo(notice.timestamp, now) : ''}</span>
                 </div>
 
                 {/* Content */}
@@ -121,7 +125,7 @@ export function NoticeSection() {
                           )}
                         >
                           <p className="mb-0.5 text-[10px] font-medium opacity-70">
-                            {reply.authorName} {'  '} {timeAgo(reply.timestamp)}
+                            {reply.authorName} {'  '} {now ? formatTimeAgo(reply.timestamp, now) : ''}
                           </p>
                           <p>{reply.content}</p>
                         </div>

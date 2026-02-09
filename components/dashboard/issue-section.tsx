@@ -2,11 +2,10 @@
 
 import { useDashboardStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import { AlertCircle, Send, X, ChevronDown, ChevronUp } from 'lucide-react'
-import { useState } from 'react'
+import { AlertCircle, Send, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
-function timeAgo(timestamp: string): string {
-  const now = new Date().getTime()
+function formatTimeAgo(timestamp: string, now: number): string {
   const then = new Date(timestamp).getTime()
   const diff = Math.floor((now - then) / 60000)
   if (diff < 1) return '방금 전'
@@ -25,6 +24,11 @@ export function IssueSection() {
   const [urgency, setUrgency] = useState<'normal' | 'urgent'>('normal')
   const [expandedIssue, setExpandedIssue] = useState<string | null>(null)
   const [replyText, setReplyText] = useState('')
+  const [now, setNow] = useState(0)
+
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) return
@@ -144,7 +148,7 @@ export function IssueSection() {
                     {issue.content}
                   </p>
                   <span className="mt-1 block text-[11px] text-gray-400">
-                    {timeAgo(issue.timestamp)}
+                    {now ? formatTimeAgo(issue.timestamp, now) : ''}
                   </span>
                 </div>
                 {isExpanded ? (
