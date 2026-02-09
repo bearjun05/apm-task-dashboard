@@ -233,9 +233,9 @@ export function WeekChapterCalendar() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex flex-1 flex-col overflow-y-auto p-4">
         {view === 'week' ? (
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid flex-1 grid-cols-5 gap-2">
             {weekDays.map((date, idx) => {
               const events = getEventsForDate(date, mockCalendarEvents)
               const isToday = idx === 0
@@ -250,7 +250,7 @@ export function WeekChapterCalendar() {
                   type="button"
                   onClick={() => setSelectedDate(date)}
                   className={cn(
-                    'flex min-h-[140px] flex-col rounded-lg border border-gray-200 p-2 text-left transition-all hover:border-gray-300 hover:shadow-sm',
+                    'flex h-full flex-col rounded-lg border border-gray-200 p-2 text-left transition-all hover:border-gray-300 hover:shadow-sm',
                     isToday && 'border-primary/30 bg-blue-50/30',
                   )}
                 >
@@ -361,7 +361,7 @@ export function WeekChapterCalendar() {
                         type="button"
                         onClick={() => setSelectedDate(date)}
                         className={cn(
-                          'flex min-h-[70px] flex-col border-r border-gray-100 p-1.5 text-left transition-colors last:border-0 hover:bg-gray-50',
+                          'flex min-h-[80px] flex-col border-r border-gray-100 p-1.5 text-left transition-colors last:border-0 hover:bg-gray-50',
                           isCurrentDay && 'bg-blue-50/50',
                         )}
                       >

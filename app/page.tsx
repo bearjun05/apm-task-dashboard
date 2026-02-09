@@ -25,13 +25,13 @@ export default function Page() {
 
         {/* Right section (6/10) */}
         <div className="flex min-w-0 flex-1 flex-col">
-          {/* Calendar (top half) */}
-          <div className="h-1/2 border-b border-gray-200">
+          {/* Calendar (top ~65%) */}
+          <div className="border-b border-gray-200" style={{ height: '65%' }}>
             <WeekChapterCalendar />
           </div>
 
-          {/* Notice & Issue (bottom half) */}
-          <div className="flex h-1/2 min-h-0">
+          {/* Notice & Issue (bottom ~35%) */}
+          <div className="flex min-h-0" style={{ height: '35%' }}>
             {/* Notices (60%) */}
             <div className="w-[60%] border-r border-gray-200">
               <NoticeSection />

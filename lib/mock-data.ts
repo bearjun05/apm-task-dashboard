@@ -28,7 +28,29 @@ export const mockTimedTasks: Task[] = [
     isCompleted: false,
     isImportant: false,
     type: 'system',
-    chatMessages: [],
+    chatMessages: [
+      {
+        id: 'tm1',
+        authorId: 'mgr1',
+        authorName: '김운영',
+        content: 'LMS 학습 진도율 30% 미만 수강생 리스트 따로 정리해주세요',
+        timestamp: new Date(today.getTime() - 7200000).toISOString(),
+        isFromManager: true,
+      },
+      {
+        id: 'tm2',
+        authorId: 'mgr1',
+        authorName: '김운영',
+        content: '특히 3주 연속 진도 미달인 분들은 면담 일정도 같이 잡아주세요',
+        timestamp: new Date(today.getTime() - 5400000).toISOString(),
+        isFromManager: true,
+      },
+    ],
+    managerRequestCount: 2,
+    attachments: [
+      { id: 'a1', name: '학습현황 확인 가이드', url: 'https://notion.so/guide-1', type: 'notion' },
+    ],
+    detailContent: 'LMS 대시보드에서 각 수강생별 학습 진도율을 확인하고, 기준 미달 수강생에게 개별 안내를 진행합니다.',
   },
   {
     id: 't3',
@@ -48,7 +70,22 @@ export const mockTimedTasks: Task[] = [
     isCompleted: false,
     isImportant: false,
     type: 'system',
-    chatMessages: [],
+    chatMessages: [
+      {
+        id: 'tm3',
+        authorId: 'mgr2',
+        authorName: '박기획',
+        content: '3조 팀 갈등 이슈가 있다고 하니 진행상황 점검할 때 유의해서 살펴봐주세요',
+        timestamp: new Date(today.getTime() - 3600000).toISOString(),
+        isFromManager: true,
+      },
+    ],
+    managerRequestCount: 1,
+    attachments: [
+      { id: 'a2', name: '프로젝트 점검 체크리스트', url: 'https://notion.so/checklist', type: 'notion' },
+      { id: 'a3', name: '팀별 진행현황 시트', url: 'https://docs.google.com/spreadsheet', type: 'link' },
+    ],
+    detailContent: '각 팀별 프로젝트 진행률과 이슈사항을 확인합니다. 특히 일정 지연되는 팀에 대한 원인 파악이 필요합니다.',
   },
   {
     id: 't5',
@@ -69,6 +106,10 @@ export const mockTimedTasks: Task[] = [
     isImportant: false,
     type: 'system',
     chatMessages: [],
+    attachments: [
+      { id: 'a4', name: '일일보고서 템플릿', url: 'https://notion.so/daily-report', type: 'notion' },
+    ],
+    detailContent: '오늘 하루 동안의 학습 현황, 수강생 이슈, 특이사항을 정리하여 보고서를 작성합니다.',
   },
   {
     id: 't7',
@@ -99,7 +140,20 @@ export const mockTodayTasks: Task[] = [
         timestamp: new Date(today.getTime() - 3600000).toISOString(),
         isFromManager: true,
       },
+      {
+        id: 'm1b',
+        authorId: 'mgr1',
+        authorName: '김운영',
+        content: '특히 학습 부진 수강생 3명 우선 면담 부탁드립니다.',
+        timestamp: new Date(today.getTime() - 2400000).toISOString(),
+        isFromManager: true,
+      },
     ],
+    managerRequestCount: 2,
+    attachments: [
+      { id: 'a5', name: '면담 일정 조율 가이드', url: 'https://notion.so/interview-guide', type: 'notion' },
+    ],
+    detailContent: '수강생별 면담 가능 시간대를 확인하고 일정을 조율합니다. 면담 시 학습 진도, 취업 준비 현황 등을 파악합니다.',
   },
   {
     id: 'td2',
@@ -108,7 +162,20 @@ export const mockTodayTasks: Task[] = [
     isCompleted: false,
     isImportant: true,
     type: 'manager_request',
-    chatMessages: [],
+    chatMessages: [
+      {
+        id: 'm2',
+        authorId: 'mgr2',
+        authorName: '박기획',
+        content: '발표 자료 사전 검토 후 피드백 부탁드립니다.',
+        timestamp: new Date(today.getTime() - 1800000).toISOString(),
+        isFromManager: true,
+      },
+    ],
+    managerRequestCount: 1,
+    attachments: [
+      { id: 'a6', name: '발표자료 검토 기준표', url: 'https://notion.so/review-criteria', type: 'notion' },
+    ],
   },
   {
     id: 'td3',

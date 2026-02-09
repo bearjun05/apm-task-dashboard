@@ -21,6 +21,7 @@ interface DashboardState {
   addIssueReply: (issueId: string, content: string) => void
   updateTaskDetail: (taskId: string, content: string) => void
   addTodayTask: (title: string) => void
+  addTaskChatMessage: (taskId: string, content: string) => void
 }
 
 export const useDashboardStore = create<DashboardState>((set) => ({
@@ -123,6 +124,26 @@ export const useDashboardStore = create<DashboardState>((set) => ({
         t.id === taskId ? { ...t, detailContent: content } : t,
       ),
     })),
+
+  addTaskChatMessage: (taskId, content) =>
+    set((state) => {
+      const newMsg = {
+        id: `msg-${Date.now()}`,
+        authorId: 'me',
+        authorName: '나',
+        content,
+        timestamp: new Date().toISOString(),
+        isFromManager: false,
+      }
+      return {
+        timedTasks: state.timedTasks.map((t) =>
+          t.id === taskId ? { ...t, chatMessages: [...t.chatMessages, newMsg] } : t,
+        ),
+        todayTasks: state.todayTasks.map((t) =>
+          t.id === taskId ? { ...t, chatMessages: [...t.chatMessages, newMsg] } : t,
+        ),
+      }
+    }),
 
   addTodayTask: (title) =>
     set((state) => ({

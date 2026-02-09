@@ -7,6 +7,13 @@ export interface Message {
   isFromManager: boolean
 }
 
+export interface Attachment {
+  id: string
+  name: string
+  url: string
+  type: 'notion' | 'link' | 'file'
+}
+
 export interface Task {
   id: string
   title: string
@@ -20,6 +27,8 @@ export interface Task {
   chatMessages: Message[]
   detailContent?: string
   relatedIssueId?: string
+  attachments?: Attachment[]
+  managerRequestCount?: number
 }
 
 export interface Notice {
