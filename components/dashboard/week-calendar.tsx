@@ -278,12 +278,14 @@ export function WeekChapterCalendar() {
                     )}
                   </div>
 
-                  {/* Track events */}
-                  {events.map((event) => (
+                  {/* Scrollable event area */}
+                  <div className="flex-1 space-y-1 overflow-y-auto">
+                    {/* Track events */}
+                    {events.map((event) => (
                       <div
                         key={event.id}
                         className={cn(
-                          'mb-1 rounded px-2 py-1 text-[11px] font-medium',
+                          'rounded px-2 py-1 text-[11px] font-medium',
                           EVENT_STYLE.bg,
                           EVENT_STYLE.text,
                         )}
@@ -292,33 +294,26 @@ export function WeekChapterCalendar() {
                       </div>
                     ))}
 
-                  {/* Separator */}
-                  {events.length > 0 && tasks.length > 0 && (
-                    <div className="my-1 border-t border-gray-200" />
-                  )}
+                    {/* Separator */}
+                    {events.length > 0 && tasks.filter((t) => t.type !== 'system').length > 0 && (
+                      <div className="border-t border-gray-200" />
+                    )}
 
-                  {/* Tasks */}
-                  {tasks
-                    .filter((t) => t.type !== 'system')
-                    .slice(0, 2)
-                    .map((task) => (
-                      <div
-                        key={task.id}
-                        className={cn(
-                          'mb-1 rounded bg-gray-100 px-2 py-1 text-[11px] text-gray-700',
-                          task.isCompleted && 'text-gray-400 line-through',
-                        )}
-                      >
-                        {task.title}
-                      </div>
-                    ))}
-
-                  {tasks.filter((t) => t.type !== 'system').length > 2 && (
-                    <div className="flex items-center gap-0.5 text-[10px] text-gray-400">
-                      <ChevronRight className="h-3 w-3" />
-                      {`+${tasks.filter((t) => t.type !== 'system').length - 2}개 더`}
-                    </div>
-                  )}
+                    {/* Tasks */}
+                    {tasks
+                      .filter((t) => t.type !== 'system')
+                      .map((task) => (
+                        <div
+                          key={task.id}
+                          className={cn(
+                            'rounded bg-gray-100 px-2 py-1 text-[11px] text-gray-700',
+                            task.isCompleted && 'text-gray-400 line-through',
+                          )}
+                        >
+                          {task.title}
+                        </div>
+                      ))}
+                  </div>
                 </button>
               )
             })}

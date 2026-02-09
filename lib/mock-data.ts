@@ -314,12 +314,26 @@ export const mockIssues: Issue[] = [
 ]
 
 export const mockCalendarEvents: CalendarEvent[] = [
+  // 오늘
   {
-    id: 'ce1',
-    title: '프로젝트 발표',
-    date: addDays(today, 2),
+    id: 'ce0a',
+    title: '오전 특강 (외부 강사)',
+    date: todayStr,
+    category: 'general',
+  },
+  {
+    id: 'ce0b',
+    title: '팀 프로젝트 중간점검',
+    date: todayStr,
     category: 'project',
   },
+  {
+    id: 'ce0c',
+    title: '수강생 포트폴리오 리뷰',
+    date: todayStr,
+    category: 'general',
+  },
+  // 내일
   {
     id: 'ce2',
     title: '과제 제출 마감',
@@ -327,16 +341,61 @@ export const mockCalendarEvents: CalendarEvent[] = [
     category: 'assignment',
   },
   {
+    id: 'ce2b',
+    title: '개인 멘토링 (1조~3조)',
+    date: addDays(today, 1),
+    category: 'general',
+  },
+  {
+    id: 'ce2c',
+    title: '이력서 클리닉',
+    date: addDays(today, 1),
+    category: 'general',
+  },
+  // 모레
+  {
+    id: 'ce1',
+    title: '프로젝트 발표',
+    date: addDays(today, 2),
+    category: 'project',
+  },
+  {
+    id: 'ce1b',
+    title: '외부 심사위원 미팅',
+    date: addDays(today, 2),
+    category: 'general',
+  },
+  // +3일
+  {
     id: 'ce3',
     title: '멘토링 세션',
     date: addDays(today, 3),
     category: 'general',
   },
   {
+    id: 'ce3b',
+    title: '취업특강 (이력서 작성)',
+    date: addDays(today, 3),
+    category: 'general',
+  },
+  {
+    id: 'ce3c',
+    title: '팀 빌딩 워크숍',
+    date: addDays(today, 3),
+    category: 'general',
+  },
+  // +4일
+  {
     id: 'ce4',
     title: '중간 평가',
     date: addDays(today, 4),
     category: 'evaluation',
+  },
+  {
+    id: 'ce4b',
+    title: '운영회의',
+    date: addDays(today, 4),
+    category: 'general',
   },
 ]
 
