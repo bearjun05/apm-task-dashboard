@@ -1,7 +1,5 @@
 'use client'
 
-import React from "react"
-
 import { useInterviewStore } from '@/lib/interview-store'
 import { cn } from '@/lib/utils'
 import { Search, AlertTriangle } from 'lucide-react'
@@ -27,14 +25,12 @@ export function TeamRoundPanel() {
   const debounceRef = useRef<ReturnType<typeof setTimeout>>()
   const highlightRef = useRef<HTMLTableRowElement>(null)
 
-  // Debounce search
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => setDebouncedQuery(value), 300)
   }, [])
 
-  // Scroll to selected student
   useEffect(() => {
     if (highlightRef.current) {
       highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -49,19 +45,17 @@ export function TeamRoundPanel() {
   }
   const teams = Array.from(teamMap.entries()).sort(([a], [b]) => a - b)
 
-  // Filter by search
+  // Filter
   const matchingStudentIds = new Set<string>()
   const matchingTeams = new Set<number>()
 
   if (debouncedQuery.trim()) {
     const q = debouncedQuery.trim().toLowerCase()
-    // Check team number search
     const teamNumMatch = q.match(/^(\d+)/)
     if (teamNumMatch) {
       const teamNum = Number(teamNumMatch[1])
       if (teamMap.has(teamNum)) matchingTeams.add(teamNum)
     }
-    // Check student name search
     for (const s of students) {
       if (s.name.toLowerCase().includes(q)) {
         matchingStudentIds.add(s.id)
@@ -74,7 +68,10 @@ export function TeamRoundPanel() {
     ? teams.filter(([teamNum]) => matchingTeams.has(teamNum))
     : teams
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const [todayStr, setTodayStr] = useState('')
+  useEffect(() => {
+    setTodayStr(new Date().toISOString().split('T')[0])
+  }, [])
 
   function getCheck(studentId: string) {
     return roundChecks.find(
@@ -82,27 +79,14 @@ export function TeamRoundPanel() {
     )
   }
 
-  function handleStudentAction(studentId: string) {
-    selectStudent(studentId)
-  }
-
-  function handleNoteKeyDown(
-    e: React.KeyboardEvent<HTMLTextAreaElement>,
-    studentId: string,
-  ) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      ;(e.target as HTMLTextAreaElement).blur()
-    }
-  }
+  // Column config: fixed widths
+  const isMorning = period === 'morning'
 
   return (
     <div className="flex h-full flex-col border-r border-gray-200">
       {/* Panel header */}
       <div className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 px-4">
         <h2 className="text-sm font-semibold text-gray-900">{'팀 순회'}</h2>
-
-        {/* Period toggle */}
         <div className="flex items-center rounded-md bg-gray-100 p-0.5">
           <button
             type="button"
@@ -145,136 +129,155 @@ export function TeamRoundPanel() {
         </div>
       </div>
 
-      {/* Teams list */}
+      {/* Single unified table */}
       <div className="flex-1 overflow-y-auto">
-        {filteredTeams.map(([teamNum, teamStudents]) => (
-          <div key={teamNum} className="border-b border-gray-200">
-            {/* Team header */}
-            <div className="bg-gray-50 px-4 py-2">
-              <span className="text-sm font-semibold text-gray-900">
-                {teamNum}{'팀'}
-              </span>
-              <span className="ml-1.5 text-xs text-gray-500">
-                {'('}{teamStudents.length}{'명)'}
-              </span>
-            </div>
+        <table className="w-full table-fixed">
+          <colgroup>
+            {/* Team label column */}
+            <col style={{ width: '52px' }} />
+            {/* Name column */}
+            <col style={{ width: '80px' }} />
+            {isMorning ? (
+              <>
+                <col style={{ width: '48px' }} />
+                <col style={{ width: '48px' }} />
+              </>
+            ) : (
+              <col style={{ width: '48px' }} />
+            )}
+            {/* Note column: takes remaining space */}
+            <col />
+          </colgroup>
 
-            {/* Table */}
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50/50">
-                  <th className="px-4 py-1.5 text-left text-xs font-medium text-gray-500">{'이름'}</th>
-                  {period === 'morning' ? (
-                    <>
-                      <th className="w-12 px-2 py-1.5 text-center text-xs font-medium text-gray-500">{'결석'}</th>
-                      <th className="w-12 px-2 py-1.5 text-center text-xs font-medium text-gray-500">{'헬스'}</th>
-                    </>
-                  ) : (
-                    <th className="w-12 px-2 py-1.5 text-center text-xs font-medium text-gray-500">{'진도'}</th>
-                  )}
-                  <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">{'특이사항'}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teamStudents.map((student) => {
-                  const check = getCheck(student.id)
-                  const isSelected = selectedStudentId === student.id
-                  const isSearchMatch =
-                    debouncedQuery.trim() && matchingStudentIds.has(student.id)
+          {/* Sticky header */}
+          <thead className="sticky top-0 z-10 bg-gray-50">
+            <tr className="border-b border-gray-200">
+              <th className="px-2 py-2 text-left text-[11px] font-medium text-gray-500">{'팀'}</th>
+              <th className="px-2 py-2 text-left text-[11px] font-medium text-gray-500">{'이름'}</th>
+              {isMorning ? (
+                <>
+                  <th className="px-1 py-2 text-center text-[11px] font-medium text-gray-500">{'결석'}</th>
+                  <th className="px-1 py-2 text-center text-[11px] font-medium text-gray-500">{'헬스'}</th>
+                </>
+              ) : (
+                <th className="px-1 py-2 text-center text-[11px] font-medium text-gray-500">{'진도'}</th>
+              )}
+              <th className="px-2 py-2 text-left text-[11px] font-medium text-gray-500">{'특이사항'}</th>
+            </tr>
+          </thead>
 
-                  return (
-                    <tr
-                      key={student.id}
-                      ref={isSelected ? highlightRef : undefined}
-                      className={cn(
-                        'border-b border-gray-100 transition-colors last:border-0',
-                        isSelected
-                          ? 'border-l-[3px] border-l-primary bg-blue-50/60'
-                          : isSearchMatch
-                            ? 'bg-blue-50/40'
-                            : 'hover:bg-gray-50',
+          <tbody>
+            {filteredTeams.map(([teamNum, teamStudents]) =>
+              teamStudents.map((student, idx) => {
+                const check = getCheck(student.id)
+                const isSelected = selectedStudentId === student.id
+                const isSearchMatch =
+                  debouncedQuery.trim() && matchingStudentIds.has(student.id)
+                const isFirstInTeam = idx === 0
+                const isLastInTeam = idx === teamStudents.length - 1
+
+                return (
+                  <tr
+                    key={student.id}
+                    ref={isSelected ? highlightRef : undefined}
+                    className={cn(
+                      'transition-colors',
+                      isLastInTeam ? 'border-b border-gray-200' : 'border-b border-gray-100',
+                      isSelected
+                        ? 'bg-blue-50/70'
+                        : isSearchMatch
+                          ? 'bg-blue-50/40'
+                          : 'hover:bg-gray-50',
+                    )}
+                  >
+                    {/* Team number: only show for first row */}
+                    <td className="px-2 py-1.5 align-middle">
+                      {isFirstInTeam && (
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+                          {teamNum}
+                        </span>
                       )}
-                    >
-                      {/* Name */}
-                      <td className="px-4 py-2">
-                        <button
-                          type="button"
-                          onClick={() => handleStudentAction(student.id)}
-                          className="flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary"
-                        >
-                          {student.name}
-                          {student.consecutiveAbsentDays >= 2 && (
-                            <span title={`${student.consecutiveAbsentDays}일 연속 결석`}>
-                              <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
-                            </span>
-                          )}
-                        </button>
-                      </td>
+                    </td>
 
-                      {period === 'morning' ? (
-                        <>
-                          {/* Absent checkbox */}
-                          <td className="px-2 py-2 text-center">
-                            <input
-                              type="checkbox"
-                              checked={check?.isAbsent ?? false}
-                              onChange={() => {
-                                toggleAbsent(student.id)
-                                handleStudentAction(student.id)
-                              }}
-                              className="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary accent-primary focus:ring-primary/20"
-                              aria-label={`${student.name} 결석`}
-                            />
-                          </td>
-                          {/* Health checkbox */}
-                          <td className="px-2 py-2 text-center">
-                            <input
-                              type="checkbox"
-                              checked={check?.healthCheck ?? false}
-                              onChange={() => {
-                                toggleHealth(student.id)
-                                handleStudentAction(student.id)
-                              }}
-                              className="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary accent-primary focus:ring-primary/20"
-                              aria-label={`${student.name} 헬스체크`}
-                            />
-                          </td>
-                        </>
-                      ) : (
-                        /* Progress checkbox */
-                        <td className="px-2 py-2 text-center">
+                    {/* Name */}
+                    <td className="px-2 py-1.5 align-middle">
+                      <button
+                        type="button"
+                        onClick={() => selectStudent(student.id)}
+                        className={cn(
+                          'flex items-center gap-1 text-sm font-medium',
+                          isSelected ? 'text-primary' : 'text-gray-900 hover:text-primary',
+                        )}
+                      >
+                        <span className="truncate">{student.name}</span>
+                        {student.consecutiveAbsentDays >= 2 && (
+                          <AlertTriangle className="h-3 w-3 shrink-0 text-destructive" />
+                        )}
+                      </button>
+                    </td>
+
+                    {isMorning ? (
+                      <>
+                        <td className="px-1 py-1.5 text-center align-middle">
                           <input
                             type="checkbox"
-                            checked={check?.progressCheck ?? false}
+                            checked={check?.isAbsent ?? false}
                             onChange={() => {
-                              toggleProgress(student.id)
-                              handleStudentAction(student.id)
+                              toggleAbsent(student.id)
+                              selectStudent(student.id)
                             }}
-                            className="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary accent-primary focus:ring-primary/20"
-                            aria-label={`${student.name} 진도체크`}
+                            className="h-3.5 w-3.5 cursor-pointer rounded border-gray-300 accent-primary"
+                            aria-label={`${student.name} 결석`}
                           />
                         </td>
-                      )}
-
-                      {/* Special note */}
-                      <td className="px-2 py-1.5">
-                        <textarea
-                          rows={1}
-                          defaultValue={check?.specialNote ?? ''}
-                          onFocus={() => handleStudentAction(student.id)}
-                          onBlur={(e) => updateSpecialNote(student.id, e.target.value)}
-                          onKeyDown={(e) => handleNoteKeyDown(e, student.id)}
-                          placeholder=""
-                          className="w-full resize-none rounded border border-gray-200 px-2 py-1 text-xs text-gray-900 placeholder:text-gray-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
+                        <td className="px-1 py-1.5 text-center align-middle">
+                          <input
+                            type="checkbox"
+                            checked={check?.healthCheck ?? false}
+                            onChange={() => {
+                              toggleHealth(student.id)
+                              selectStudent(student.id)
+                            }}
+                            className="h-3.5 w-3.5 cursor-pointer rounded border-gray-300 accent-primary"
+                            aria-label={`${student.name} 헬스체크`}
+                          />
+                        </td>
+                      </>
+                    ) : (
+                      <td className="px-1 py-1.5 text-center align-middle">
+                        <input
+                          type="checkbox"
+                          checked={check?.progressCheck ?? false}
+                          onChange={() => {
+                            toggleProgress(student.id)
+                            selectStudent(student.id)
+                          }}
+                          className="h-3.5 w-3.5 cursor-pointer rounded border-gray-300 accent-primary"
+                          aria-label={`${student.name} 진도체크`}
                         />
                       </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        ))}
+                    )}
+
+                    {/* Special note */}
+                    <td className="px-2 py-1">
+                      <input
+                        type="text"
+                        defaultValue={check?.specialNote ?? ''}
+                        onFocus={() => selectStudent(student.id)}
+                        onBlur={(e) => updateSpecialNote(student.id, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                        }}
+                        placeholder=""
+                        className="w-full rounded border border-transparent bg-transparent px-1.5 py-0.5 text-xs text-gray-900 placeholder:text-gray-300 hover:border-gray-200 focus:border-primary focus:bg-background focus:outline-none focus:ring-1 focus:ring-primary/20"
+                      />
+                    </td>
+                  </tr>
+                )
+              }),
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   )
