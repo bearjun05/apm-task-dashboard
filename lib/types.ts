@@ -60,3 +60,33 @@ export interface CalendarEvent {
   date: string
   category: 'assignment' | 'project' | 'evaluation' | 'general'
 }
+
+// --- Interview Management Types ---
+
+export interface Student {
+  id: string
+  name: string
+  teamNumber: number
+  consecutiveAbsentDays: number
+}
+
+export interface TeamRoundCheck {
+  studentId: string
+  date: string
+  period: 'morning' | 'afternoon'
+  isAbsent?: boolean
+  healthCheck?: boolean
+  progressCheck?: boolean
+  specialNote?: string
+}
+
+export interface StudentLog {
+  id: string
+  studentId: string
+  studentName: string
+  content: string
+  authorId: string
+  authorName: string
+  period: 'morning' | 'afternoon'
+  createdAt: string
+}
