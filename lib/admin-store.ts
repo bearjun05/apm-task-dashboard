@@ -11,7 +11,8 @@ import type {
   OperatorTrackDetail,
   KanbanCard,
   KanbanStatus,
-  ChatMessage,
+  ChatRoom,
+  ChatBubbleData,
   PlannerTrackCard,
 } from './admin-mock-data'
 import {
@@ -24,7 +25,7 @@ import {
   mockOperatorTasks,
   mockOperatorTrackDetails,
   mockKanbanCards,
-  mockChatMessages,
+  mockChatRooms,
   mockPlannerTracks,
 } from './admin-mock-data'
 
@@ -42,13 +43,16 @@ interface AdminState {
 
   // Kanban
   kanbanCards: KanbanCard[]
-  chatMessages: ChatMessage[]
+  chatRooms: ChatRoom[]
   plannerTracks: PlannerTrackCard[]
 
   // Kanban actions
   moveKanbanCard: (cardId: string, newStatus: KanbanStatus) => void
   updateKanbanCardStatus: (cardId: string, newStatus: KanbanStatus) => void
   addKanbanReply: (cardId: string, content: string) => void
+
+  // Chat actions
+  addChatMessage: (roomId: string, content: string) => void
 
   // Staff detail actions
   addConversationMessage: (convId: string, content: string) => void
@@ -68,7 +72,7 @@ export const useAdminStore = create<AdminState>((set) => ({
   userRole: 'operator_manager',
 
   kanbanCards: mockKanbanCards,
-  chatMessages: mockChatMessages,
+  chatRooms: mockChatRooms,
   plannerTracks: mockPlannerTracks,
 
   moveKanbanCard: (cardId, newStatus) =>
@@ -104,6 +108,30 @@ export const useAdminStore = create<AdminState>((set) => ({
               ],
             }
           : c,
+      ),
+    })),
+
+  addChatMessage: (roomId, content) =>
+    set((state) => ({
+      chatRooms: state.chatRooms.map((r) =>
+        r.id === roomId
+          ? {
+              ...r,
+              lastMessage: content,
+              lastTime: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+              unreadCount: 0,
+              messages: [
+                ...r.messages,
+                {
+                  id: `cm-${Date.now()}`,
+                  isSelf: true,
+                  authorName: '나',
+                  message: content,
+                  time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                } as ChatBubbleData,
+              ],
+            }
+          : r,
       ),
     })),
 

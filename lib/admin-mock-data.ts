@@ -122,16 +122,27 @@ export interface KanbanCard {
   messages: StaffMessage[]
 }
 
-export interface ChatMessage {
+export interface ChatBubbleData {
   id: string
+  isSelf: boolean
   authorName: string
-  trackName: string
-  timeAgo: string
-  isUrgent: boolean
+  message: string
+  time: string       // e.g. "09:30"
   taskTitle?: string
   taskContent?: string
-  message: string
   relatedKanbanId?: string
+}
+
+export interface ChatRoom {
+  id: string
+  operatorName: string
+  operatorId: string
+  tracks: string[]       // e.g. ['AI 7기','AI 8기']
+  lastMessage: string
+  lastTime: string
+  unreadCount: number
+  hasUrgent: boolean
+  messages: ChatBubbleData[]
 }
 
 export interface PlannerTrackCard {
@@ -495,73 +506,44 @@ export const mockKanbanCards: KanbanCard[] = [
   },
 ]
 
-// -- Chat Messages --
+// -- Chat Rooms (per-operator) --
 
-export const mockChatMessages: ChatMessage[] = [
+export const mockChatRooms: ChatRoom[] = [
   {
-    id: 'chat1',
-    authorName: '이운영',
-    trackName: 'AI 7기',
-    timeAgo: '5분 전',
-    isUrgent: false,
-    taskTitle: '중간 평가 준비',
-    taskContent: '중간 평가 일정을 확인해주세요. 다음 주 목요일로 진행 예정입니다.',
-    message: '확인 부탁드립니다. 다음 주로 예정되어 있습니다.',
-    relatedKanbanId: 'kb1',
+    id: 'room-op1',
+    operatorName: '이운영',
+    operatorId: 'op1',
+    tracks: ['AI 7기', 'AI 8기'],
+    lastMessage: '확인 부탁드립니다.',
+    lastTime: '10:05',
+    unreadCount: 3,
+    hasUrgent: false,
+    messages: [
+      { id: 'rm1-1', isSelf: false, authorName: '이운영', message: 'AI 8기 커리큘럼 초안 작성했습니다.', time: '08:20' },
+      { id: 'rm1-2', isSelf: true, authorName: '나', message: '확인했습니다. 2장 내용 괜찮네요.', time: '08:35' },
+      { id: 'rm1-3', isSelf: false, authorName: '이운영', message: '오전 팀순회 보고 올립니다.', time: '09:00' },
+      { id: 'rm1-4', isSelf: false, authorName: '이운영', message: 'OT 자료 업데이트 관련 확인 부탁드립니다.', time: '09:15', taskTitle: '자료 업데이트', taskContent: 'AI 8기 OT 자료를 최신 버전으로 업데이트해야 합니다.', relatedKanbanId: 'kb3' },
+      { id: 'rm1-5', isSelf: true, authorName: '나', message: '네, 이번 주 중으로 확인할게요.', time: '09:30' },
+      { id: 'rm1-6', isSelf: false, authorName: '이운영', message: '중간 평가 일정 확인 부탁드립니다. 다음 주 목요일로 진행 예정입니다.', time: '10:00', taskTitle: '중간 평가 준비', taskContent: '중간 평가 일정을 확인해주세요.', relatedKanbanId: 'kb1' },
+      { id: 'rm1-7', isSelf: false, authorName: '이운영', message: '확인 부탁드립니다.', time: '10:05' },
+    ],
   },
   {
-    id: 'chat2',
-    authorName: '김운영',
-    trackName: 'BE 5기',
-    timeAgo: '1시간 전',
-    isUrgent: true,
-    message: '긴급 요청사항이 있습니다',
-    relatedKanbanId: 'kb2',
-  },
-  {
-    id: 'chat3',
-    authorName: '이운영',
-    trackName: 'AI 8기',
-    timeAgo: '2시간 전',
-    isUrgent: false,
-    taskTitle: '자료 업데이트',
-    taskContent: 'AI 8기 OT 자료를 최신 버전으로 업데이트해야 합니다.',
-    message: 'OT 자료 업데이트 관련 확인 부탁드립니다.',
-    relatedKanbanId: 'kb3',
-  },
-  {
-    id: 'chat4',
-    authorName: '김운영',
-    trackName: 'BE 5기',
-    timeAgo: '3시간 전',
-    isUrgent: false,
-    taskTitle: '멘토링 피드백',
-    taskContent: '이번 주 멘토링 세션에 대한 피드백입니다.',
-    message: '멘토링 피드백 정리 완료했습니다.',
-  },
-  {
-    id: 'chat5',
-    authorName: '이운영',
-    trackName: 'AI 7기',
-    timeAgo: '4시간 전',
-    isUrgent: false,
-    message: '오전 팀순회 보고 올립니다.',
-  },
-  {
-    id: 'chat6',
-    authorName: '김운영',
-    trackName: 'BE 5기',
-    timeAgo: '5시간 전',
-    isUrgent: false,
-    message: '수강생 출결 현황 공유합니다.',
-  },
-  {
-    id: 'chat7',
-    authorName: '이운영',
-    trackName: 'AI 8기',
-    timeAgo: '6시간 전',
-    isUrgent: false,
-    message: 'AI 8기 커리큘럼 초안 작성했습니다.',
+    id: 'room-op2',
+    operatorName: '김운영',
+    operatorId: 'op2',
+    tracks: ['BE 5기'],
+    lastMessage: '긴급 요청사항이 있습니다',
+    lastTime: '09:55',
+    unreadCount: 1,
+    hasUrgent: true,
+    messages: [
+      { id: 'rm2-1', isSelf: false, authorName: '김운영', message: '수강생 출결 현황 공유합니다.', time: '07:30' },
+      { id: 'rm2-2', isSelf: true, authorName: '나', message: '감사합니다. 결석 비율이 좀 높네요.', time: '07:45' },
+      { id: 'rm2-3', isSelf: false, authorName: '김운영', message: '멘토링 피드백 정리 완료했습니다.', time: '08:00', taskTitle: '멘토링 피드백', taskContent: '이번 주 멘토링 세션에 대한 피드백입니다.' },
+      { id: 'rm2-4', isSelf: true, authorName: '나', message: '좋습니다. 공유 감사해요.', time: '08:10' },
+      { id: 'rm2-5', isSelf: false, authorName: '김운영', message: '긴급 요청사항이 있습니다', time: '09:55', relatedKanbanId: 'kb2' },
+    ],
   },
 ]
 
