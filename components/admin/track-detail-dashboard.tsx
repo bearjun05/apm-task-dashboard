@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useAdminStore } from '@/lib/admin-store'
 import { AdminSidebar } from './admin-sidebar'
 import { ArrowLeft, Bell, AlertTriangle, MessageSquare } from 'lucide-react'
@@ -18,11 +19,11 @@ function ProgressBar({ value, className }: { value: number; className?: string }
   )
 }
 
-export function TrackDetailDashboard() {
-  const { tracks, selectedTrackId, staffCards, goBack, navigateTo } = useAdminStore()
+export function TrackDetailDashboard({ trackId }: { trackId: string }) {
+  const { tracks, staffCards } = useAdminStore()
   const [activeMenu, setActiveMenu] = useState('dashboard')
 
-  const track = tracks.find((t) => t.id === selectedTrackId) ?? tracks[0]
+  const track = tracks.find((t) => t.id === trackId) ?? tracks[0]
 
   return (
     <div className="flex h-screen bg-background">
@@ -41,14 +42,13 @@ export function TrackDetailDashboard() {
             <span>{'담당: 이운영'}</span>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={goBack}
+            <Link
+              href="/admin"
               className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               {'전체 트랙 목록'}
-            </button>
+            </Link>
             <button
               type="button"
               className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -60,7 +60,7 @@ export function TrackDetailDashboard() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6 space-y-6">
+        <main className="flex-1 space-y-6 overflow-y-auto p-6">
           {/* Section 1: Today's Summary */}
           <section className="rounded-lg border border-border bg-card p-5">
             <h2 className="text-base font-semibold text-foreground">{'오늘의 요약'}</h2>
@@ -155,13 +155,12 @@ export function TrackDetailDashboard() {
                     )}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => navigateTo('staff-detail', { staffId: staff.id })}
-                    className="mt-4 w-full rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                  <Link
+                    href={`/admin/tracks/${trackId}/staff/${staff.id}`}
+                    className="mt-4 block w-full rounded-md border border-border px-3 py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-secondary"
                   >
                     {'상세보기'}
-                  </button>
+                  </Link>
                 </div>
               ))}
             </div>

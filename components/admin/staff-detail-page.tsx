@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { useAdminStore } from '@/lib/admin-store'
 import type { StaffConversation, StaffIssue } from '@/lib/admin-mock-data'
 import {
@@ -61,7 +62,7 @@ function ThreadModal({
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto p-5">
           {conversation.messages.map((msg) => (
             <div
               key={msg.id}
@@ -166,7 +167,7 @@ function IssueModal({
 
         {/* Content */}
         <div className="px-5 py-4">
-          <div className="rounded-md bg-secondary p-4 text-sm text-foreground whitespace-pre-line">
+          <div className="whitespace-pre-line rounded-md bg-secondary p-4 text-sm text-foreground">
             {issue.content}
           </div>
         </div>
@@ -243,16 +244,13 @@ function IssueModal({
 }
 
 // --- Main Page ---
-export function StaffDetailPage() {
+export function StaffDetailPage({ trackId, staffId }: { trackId: string; staffId: string }) {
   const {
     staffCards,
-    selectedStaffId,
     staffConversations,
     staffIssues,
     staffTasks,
     tracks,
-    selectedTrackId,
-    goBack,
   } = useAdminStore()
 
   const [issueTab, setIssueTab] = useState<'pending' | 'in-progress' | 'done'>('pending')
@@ -260,8 +258,8 @@ export function StaffDetailPage() {
   const [threadModal, setThreadModal] = useState<StaffConversation | null>(null)
   const [issueModal, setIssueModal] = useState<StaffIssue | null>(null)
 
-  const staff = staffCards.find((s) => s.id === selectedStaffId) ?? staffCards[0]
-  const track = tracks.find((t) => t.id === selectedTrackId) ?? tracks[0]
+  const staff = staffCards.find((s) => s.id === staffId) ?? staffCards[0]
+  const track = tracks.find((t) => t.id === trackId) ?? tracks[0]
 
   const filteredIssues = staffIssues.filter((i) => i.status === issueTab)
   const filteredTasks =
@@ -288,15 +286,20 @@ export function StaffDetailPage() {
       {/* Header */}
       <header className="flex h-[60px] shrink-0 items-center justify-between border-b border-border bg-card px-6">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={goBack}
+          <Link
+            href={`/admin/tracks/${trackId}`}
             className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             aria-label="뒤로가기"
           >
             <ArrowLeft className="h-5 w-5" />
-          </button>
-          <span className="text-sm text-muted-foreground">{track.name}</span>
+          </Link>
+          <Link href="/admin" className="text-sm text-muted-foreground hover:underline">
+            {'관리자'}
+          </Link>
+          <span className="text-sm text-muted-foreground">{'>'}</span>
+          <Link href={`/admin/tracks/${trackId}`} className="text-sm text-muted-foreground hover:underline">
+            {track.name}
+          </Link>
           <span className="text-sm text-muted-foreground">{'>'}</span>
           <span className="text-sm font-semibold text-foreground">{staff.name}</span>
         </div>
@@ -310,7 +313,7 @@ export function StaffDetailPage() {
       </header>
 
       {/* Body: 2x2 grid top, full width bottom */}
-      <main className="flex-1 overflow-y-auto p-6 space-y-6">
+      <main className="flex-1 space-y-6 overflow-y-auto p-6">
         {/* Top row: conversations (40%) + issues (60%) */}
         <div className="grid grid-cols-10 gap-4">
           {/* Task Conversations */}
@@ -450,7 +453,7 @@ export function StaffDetailPage() {
                 key={task.id}
                 className={cn(
                   'flex items-center justify-between rounded-md px-4 py-3',
-                  task.isCompleted ? 'bg-secondary/50' : 'bg-background border border-border',
+                  task.isCompleted ? 'bg-secondary/50' : 'border border-border bg-background',
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -515,4 +518,3 @@ export function StaffDetailPage() {
     </div>
   )
 }
-

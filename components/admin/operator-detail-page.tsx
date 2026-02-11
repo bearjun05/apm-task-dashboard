@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useAdminStore } from '@/lib/admin-store'
 import { ArrowLeft, Bell, ChevronDown, ChevronUp, MessageSquare, AlertTriangle } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 function ProgressBar({ value, className }: { value: number; className?: string }) {
   const color =
@@ -18,19 +18,11 @@ function ProgressBar({ value, className }: { value: number; className?: string }
   )
 }
 
-export function OperatorDetailPage() {
-  const {
-    operators,
-    selectedOperatorId,
-    operatorTasks,
-    operatorTrackDetails,
-    goBack,
-    navigateTo,
-  } = useAdminStore()
-
+export function OperatorDetailPage({ operatorId }: { operatorId: string }) {
+  const { operators, operatorTasks, operatorTrackDetails } = useAdminStore()
   const [showCompleted, setShowCompleted] = useState(false)
 
-  const operator = operators.find((op) => op.id === selectedOperatorId) ?? operators[0]
+  const operator = operators.find((op) => op.id === operatorId) ?? operators[0]
   const tasks = operatorTasks[operator.id] ?? []
   const trackDetails = operatorTrackDetails[operator.id] ?? []
 
@@ -42,14 +34,13 @@ export function OperatorDetailPage() {
       {/* Header */}
       <header className="flex h-[60px] shrink-0 items-center justify-between border-b border-border bg-card px-6">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={goBack}
+          <Link
+            href="/admin"
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             aria-label="뒤로가기"
           >
             <ArrowLeft className="h-5 w-5" />
-          </button>
+          </Link>
           <div className="flex items-center gap-2 text-sm">
             <span className="font-semibold text-foreground">
               {'운영매: '}{operator.name}
@@ -162,17 +153,12 @@ export function OperatorDetailPage() {
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-foreground">{staff.name}</h3>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          navigateTo('track-detail', {
-                            trackId: trackDetail.trackId,
-                          })
-                        }
+                      <Link
+                        href={`/admin/tracks/${trackDetail.trackId}`}
                         className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                       >
                         {'상세보기'}
-                      </button>
+                      </Link>
                     </div>
 
                     <div className="mt-2.5">

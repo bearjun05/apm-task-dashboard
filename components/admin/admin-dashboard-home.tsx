@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useAdminStore } from '@/lib/admin-store'
 import { Bell } from 'lucide-react'
 
@@ -17,7 +18,7 @@ function ProgressBar({ value, className }: { value: number; className?: string }
 }
 
 export function AdminDashboardHome() {
-  const { operators, tracks, userRole, navigateTo } = useAdminStore()
+  const { operators, tracks, userRole } = useAdminStore()
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -47,11 +48,10 @@ export function AdminDashboardHome() {
             <h2 className="mb-4 text-sm font-medium text-muted-foreground">{'담당 운영매'}</h2>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {operators.map((op) => (
-                <button
+                <Link
                   key={op.id}
-                  type="button"
-                  onClick={() => navigateTo('operator-detail', { operatorId: op.id })}
-                  className="rounded-lg border border-border bg-card p-5 text-left transition-shadow hover:shadow-md"
+                  href={`/admin/operators/${op.id}`}
+                  className="block rounded-lg border border-border bg-card p-5 text-left transition-shadow hover:shadow-md"
                 >
                   <h3 className="text-base font-semibold text-foreground">{op.displayName}</h3>
 
@@ -82,7 +82,7 @@ export function AdminDashboardHome() {
                       ))}
                     </div>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
           </section>
@@ -98,11 +98,10 @@ export function AdminDashboardHome() {
           <h2 className="mb-4 text-sm font-medium text-muted-foreground">{'내 담당 트랙'}</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {tracks.map((track) => (
-              <button
+              <Link
                 key={track.id}
-                type="button"
-                onClick={() => navigateTo('track-detail', { trackId: track.id })}
-                className={`rounded-lg border bg-card p-5 text-left transition-shadow hover:shadow-md ${
+                href={`/admin/tracks/${track.id}`}
+                className={`block rounded-lg border bg-card p-5 text-left transition-shadow hover:shadow-md ${
                   track.isOwned ? 'border-primary border-2' : 'border-border'
                 }`}
               >
@@ -141,7 +140,7 @@ export function AdminDashboardHome() {
                   <span className="text-border">{'|'}</span>
                   <span>{'수강생 '}{track.studentCount}{'명'}</span>
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         </section>
