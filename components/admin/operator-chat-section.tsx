@@ -10,7 +10,10 @@ import {
   Send,
   LinkIcon,
   MessageSquare,
+  Tag,
+  X,
 } from 'lucide-react'
+import type { KanbanCard } from '@/lib/admin-mock-data'
 
 /* ------------------------------------------------------------------ */
 /*  Chat room list item (left panel)                                  */
@@ -154,12 +157,21 @@ export function OperatorChatSection({
 }: {
   onViewKanbanDetail?: (kanbanId: string) => void
 }) {
-  const { chatRooms, addChatMessage } = useAdminStore()
+  const { chatRooms, kanbanCards, addChatMessage } = useAdminStore()
   const [activeRoomId, setActiveRoomId] = useState(chatRooms[0]?.id ?? '')
   const [inputText, setInputText] = useState('')
+  const [taggedKanbanId, setTaggedKanbanId] = useState<string | null>(null)
+  const [showTagPicker, setShowTagPicker] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const activeRoom = chatRooms.find((r) => r.id === activeRoomId)
+
+  // Kanban cards relevant to the active room's operator
+  const roomKanbanCards = activeRoom
+    ? kanbanCards.filter((c) => c.operatorName === activeRoom.operatorName)
+    : []
+
+  const taggedCard = taggedKanbanId ? kanbanCards.find((c) => c.id === taggedKanbanId) : null
 
   // Auto-scroll when active room changes or messages are added
   useEffect(() => {
@@ -170,8 +182,9 @@ export function OperatorChatSection({
 
   const handleSend = () => {
     if (!inputText.trim() || !activeRoomId) return
-    addChatMessage(activeRoomId, inputText.trim())
+    addChatMessage(activeRoomId, inputText.trim(), taggedKanbanId ?? undefined)
     setInputText('')
+    setTaggedKanbanId(null)
   }
 
   return (
@@ -191,7 +204,7 @@ export function OperatorChatSection({
                 key={room.id}
                 room={room}
                 isActive={room.id === activeRoomId}
-                onClick={() => setActiveRoomId(room.id)}
+                onClick={() => { setActiveRoomId(room.id); setTaggedKanbanId(null); setShowTagPicker(false) }}
               />
             ))}
           </div>
@@ -231,8 +244,60 @@ export function OperatorChatSection({
                 ))}
               </div>
 
+              {/* Tagged task indicator */}
+              {taggedCard && (
+                <div className="flex items-center gap-2 border-t border-border bg-secondary/30 px-4 py-1.5">
+                  <Tag className="h-3 w-3 text-primary" />
+                  <span className="flex-1 truncate text-xs font-medium text-foreground">
+                    {'Task: '}{taggedCard.title}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setTaggedKanbanId(null)}
+                    className="rounded p-0.5 text-muted-foreground hover:bg-secondary"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+
+              {/* Tag picker dropdown */}
+              {showTagPicker && roomKanbanCards.length > 0 && (
+                <div className="border-t border-border bg-card px-3 py-2">
+                  <p className="mb-1.5 text-xs font-medium text-muted-foreground">{'Task 태그 선택'}</p>
+                  <div className="max-h-[120px] space-y-1 overflow-y-auto">
+                    {roomKanbanCards.map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => { setTaggedKanbanId(c.id); setShowTagPicker(false) }}
+                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-secondary ${
+                          taggedKanbanId === c.id ? 'bg-primary/10 font-semibold' : ''
+                        }`}
+                      >
+                        <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: c.trackColor }} />
+                        <span className="flex-1 truncate text-foreground">{c.title}</span>
+                        <span className="shrink-0 text-muted-foreground">{c.trackName}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Input */}
               <div className="flex items-center gap-2 border-t border-border bg-card px-3 py-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowTagPicker(!showTagPicker)}
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
+                    showTagPicker || taggedKanbanId
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-secondary'
+                  }`}
+                  aria-label="Task 태그"
+                >
+                  <Tag className="h-4 w-4" />
+                </button>
                 <input
                   type="text"
                   value={inputText}
@@ -243,14 +308,14 @@ export function OperatorChatSection({
                       handleSend()
                     }
                   }}
-                  placeholder="메시지를 입력하세요..."
+                  placeholder={taggedCard ? `${taggedCard.title}에 대한 메시지...` : '메시지를 입력하세요...'}
                   className="flex-1 rounded-full border border-border bg-secondary/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                 />
                 <button
                   type="button"
                   disabled={!inputText.trim()}
                   onClick={handleSend}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors disabled:opacity-40"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors disabled:opacity-40"
                   aria-label="메시지 전송"
                 >
                   <Send className="h-4 w-4" />

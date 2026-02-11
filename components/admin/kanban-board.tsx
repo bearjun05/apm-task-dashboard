@@ -93,23 +93,39 @@ function CardDetailModal({
           <p className="text-sm leading-relaxed text-foreground">{card.content}</p>
         </div>
 
-        {/* Messages */}
-        {card.messages.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-b border-border px-5 py-3">
-            <p className="mb-2 text-xs font-medium text-muted-foreground">{'대화 내역'}</p>
-            <div className="space-y-2">
-              {card.messages.map((m) => (
-                <div key={m.id} className={`rounded-lg p-2.5 text-sm ${m.isSelf ? 'ml-8 bg-primary/10' : 'mr-8 bg-secondary'}`}>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">{m.authorName}</span>
-                    <span>{m.timestamp}</span>
+        {/* Messages -- show card's own messages + linked chat room messages */}
+        {(() => {
+          const linkedMessages = useAdminStore.getState().getKanbanLinkedMessages(card.id)
+          const allMessages = [
+            ...card.messages.map((m) => ({ id: m.id, authorName: m.authorName, content: m.content, time: m.timestamp, isSelf: m.isSelf, source: 'kanban' as const })),
+            ...linkedMessages
+              .filter((lm) => !card.messages.some((cm) => cm.id === lm.id))
+              .map((lm) => ({ id: lm.id, authorName: lm.authorName, content: lm.message, time: lm.time, isSelf: lm.isSelf, source: 'chat' as const })),
+          ]
+          if (allMessages.length === 0) return null
+          return (
+            <div className="flex-1 overflow-y-auto border-b border-border px-5 py-3">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
+                {'대화 내역'}
+                <span className="ml-1.5 text-muted-foreground/60">{'(채팅에서 태그된 메시지 포함)'}</span>
+              </p>
+              <div className="space-y-2">
+                {allMessages.map((m) => (
+                  <div key={m.id} className={`rounded-lg p-2.5 text-sm ${m.isSelf ? 'ml-8 bg-primary/10' : 'mr-8 bg-secondary'}`}>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground">{m.authorName}</span>
+                      <span>{m.time}</span>
+                      {m.source === 'chat' && (
+                        <span className="rounded bg-secondary px-1 py-px text-[10px] text-muted-foreground">{'채팅'}</span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-foreground">{m.content}</p>
                   </div>
-                  <p className="mt-1 text-foreground">{m.content}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        })()}
 
         {/* Reply + Status */}
         <div className="px-5 py-3">

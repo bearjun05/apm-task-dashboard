@@ -52,7 +52,8 @@ interface AdminState {
   addKanbanReply: (cardId: string, content: string) => void
 
   // Chat actions
-  addChatMessage: (roomId: string, content: string) => void
+  addChatMessage: (roomId: string, content: string, relatedKanbanId?: string) => void
+  getKanbanLinkedMessages: (kanbanId: string) => ChatBubbleData[]
 
   // Staff detail actions
   addConversationMessage: (convId: string, content: string) => void
@@ -89,51 +90,112 @@ export const useAdminStore = create<AdminState>((set) => ({
       ),
     })),
 
-  addKanbanReply: (cardId, content) =>
-    set((state) => ({
-      kanbanCards: state.kanbanCards.map((c) =>
+  addKanbanReply: (cardId, content) => {
+    const now = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })
+
+    set((state) => {
+      // Find the kanban card to know which operator it belongs to
+      const card = state.kanbanCards.find((c) => c.id === cardId)
+
+      // 1. Add message to kanban card
+      const newKanbanCards = state.kanbanCards.map((c) =>
         c.id === cardId
           ? {
               ...c,
-              status: c.status === 'waiting' ? 'in-progress' as KanbanStatus : c.status,
+              status: c.status === 'waiting' ? ('in-progress' as KanbanStatus) : c.status,
               messages: [
                 ...c.messages,
-                {
-                  id: `kbr-${Date.now()}`,
-                  authorName: '나',
-                  content,
-                  timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
-                  isSelf: true,
-                } as StaffMessage,
+                { id: `kbr-${Date.now()}`, authorName: '나', content, timestamp: now, isSelf: true } as StaffMessage,
               ],
             }
           : c,
-      ),
-    })),
+      )
 
-  addChatMessage: (roomId, content) =>
-    set((state) => ({
-      chatRooms: state.chatRooms.map((r) =>
+      // 2. Also sync into the matching operator's chat room
+      let newChatRooms = state.chatRooms
+      if (card) {
+        const matchRoom = state.chatRooms.find((r) => r.operatorName === card.operatorName)
+        if (matchRoom) {
+          newChatRooms = state.chatRooms.map((r) =>
+            r.id === matchRoom.id
+              ? {
+                  ...r,
+                  lastMessage: content,
+                  lastTime: now,
+                  messages: [
+                    ...r.messages,
+                    {
+                      id: `kbr-chat-${Date.now()}`,
+                      isSelf: true,
+                      authorName: '나',
+                      message: content,
+                      time: now,
+                      relatedKanbanId: cardId,
+                      taskTitle: card.title,
+                    } as ChatBubbleData,
+                  ],
+                }
+              : r,
+          )
+        }
+      }
+
+      return { kanbanCards: newKanbanCards, chatRooms: newChatRooms }
+    })
+  },
+
+  addChatMessage: (roomId, content, relatedKanbanId) => {
+    const now = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })
+    const newBubble: ChatBubbleData = {
+      id: `cm-${Date.now()}`,
+      isSelf: true,
+      authorName: '나',
+      message: content,
+      time: now,
+      relatedKanbanId,
+    }
+
+    set((state) => {
+      // 1. Add message to chat room
+      const newChatRooms = state.chatRooms.map((r) =>
         r.id === roomId
-          ? {
-              ...r,
-              lastMessage: content,
-              lastTime: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
-              unreadCount: 0,
-              messages: [
-                ...r.messages,
-                {
-                  id: `cm-${Date.now()}`,
-                  isSelf: true,
-                  authorName: '나',
-                  message: content,
-                  time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
-                } as ChatBubbleData,
-              ],
-            }
+          ? { ...r, lastMessage: content, lastTime: now, unreadCount: 0, messages: [...r.messages, newBubble] }
           : r,
-      ),
-    })),
+      )
+
+      // 2. If tagged to a kanban card, also sync to that card's messages
+      let newKanbanCards = state.kanbanCards
+      if (relatedKanbanId) {
+        newKanbanCards = state.kanbanCards.map((c) =>
+          c.id === relatedKanbanId
+            ? {
+                ...c,
+                status: c.status === 'waiting' ? ('in-progress' as KanbanStatus) : c.status,
+                messages: [
+                  ...c.messages,
+                  { id: newBubble.id, authorName: '나', content, timestamp: now, isSelf: true } as StaffMessage,
+                ],
+              }
+            : c,
+        )
+      }
+
+      return { chatRooms: newChatRooms, kanbanCards: newKanbanCards }
+    })
+  },
+
+  getKanbanLinkedMessages: (kanbanId) => {
+    const state = useAdminStore.getState()
+    const linked: ChatBubbleData[] = []
+    for (const room of state.chatRooms) {
+      for (const msg of room.messages) {
+        if (msg.relatedKanbanId === kanbanId) {
+          linked.push(msg)
+        }
+      }
+    }
+    return linked
+  },
 
   addConversationMessage: (convId, content) =>
     set((state) => ({
