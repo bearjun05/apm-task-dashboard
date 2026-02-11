@@ -1,6 +1,7 @@
 'use client'
 
-import { Bell, Download } from 'lucide-react'
+import { Bell, Download, Shield } from 'lucide-react'
+import Link from 'next/link'
 import { useDashboardStore } from '@/lib/store'
 import { useInterviewStore } from '@/lib/interview-store'
 import { useState, useRef, useEffect } from 'react'
@@ -180,6 +181,15 @@ export function DashboardHeader({ currentPage, onPageChange }: HeaderProps) {
             </button>
           </div>
         )}
+
+        {/* Admin link */}
+        <Link
+          href="/admin"
+          className="flex items-center gap-1.5 rounded-md border border-gray-200 bg-card px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          <Shield className="h-3.5 w-3.5" />
+          {'관리자'}
+        </Link>
 
         {/* Notification bell (shared) */}
         <div className="relative" ref={dropdownRef}>
