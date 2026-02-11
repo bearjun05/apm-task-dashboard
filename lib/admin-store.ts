@@ -7,6 +7,8 @@ import type {
   StaffIssue,
   StaffTask,
   StaffMessage,
+  OperatorTask,
+  OperatorTrackDetail,
 } from './admin-mock-data'
 import {
   mockOperators,
@@ -15,15 +17,18 @@ import {
   mockStaffConversations,
   mockStaffIssues,
   mockStaffTasks,
+  mockOperatorTasks,
+  mockOperatorTrackDetails,
 } from './admin-mock-data'
 
-export type AdminView = 'home' | 'track-detail' | 'staff-detail'
+export type AdminView = 'home' | 'operator-detail' | 'track-detail' | 'staff-detail'
 
 interface AdminState {
   // Navigation
   currentView: AdminView
   selectedTrackId: string | null
   selectedStaffId: string | null
+  selectedOperatorId: string | null
   userRole: 'operator_manager' | 'operator'
 
   // Data
@@ -33,9 +38,11 @@ interface AdminState {
   staffConversations: StaffConversation[]
   staffIssues: StaffIssue[]
   staffTasks: StaffTask[]
+  operatorTasks: Record<string, OperatorTask[]>
+  operatorTrackDetails: Record<string, OperatorTrackDetail[]>
 
   // Actions
-  navigateTo: (view: AdminView, trackId?: string, staffId?: string) => void
+  navigateTo: (view: AdminView, params?: { trackId?: string; staffId?: string; operatorId?: string }) => void
   goBack: () => void
 
   // Staff detail actions
@@ -48,6 +55,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   currentView: 'home',
   selectedTrackId: null,
   selectedStaffId: null,
+  selectedOperatorId: null,
   userRole: 'operator_manager',
 
   operators: mockOperators,
@@ -56,12 +64,15 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   staffConversations: mockStaffConversations,
   staffIssues: mockStaffIssues,
   staffTasks: mockStaffTasks,
+  operatorTasks: mockOperatorTasks,
+  operatorTrackDetails: mockOperatorTrackDetails,
 
-  navigateTo: (view, trackId, staffId) =>
+  navigateTo: (view, params) =>
     set({
       currentView: view,
-      selectedTrackId: trackId ?? get().selectedTrackId,
-      selectedStaffId: staffId ?? get().selectedStaffId,
+      selectedTrackId: params?.trackId ?? get().selectedTrackId,
+      selectedStaffId: params?.staffId ?? get().selectedStaffId,
+      selectedOperatorId: params?.operatorId ?? get().selectedOperatorId,
     }),
 
   goBack: () => {
@@ -70,6 +81,8 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       set({ currentView: 'track-detail', selectedStaffId: null })
     } else if (currentView === 'track-detail') {
       set({ currentView: 'home', selectedTrackId: null })
+    } else if (currentView === 'operator-detail') {
+      set({ currentView: 'home', selectedOperatorId: null })
     }
   },
 

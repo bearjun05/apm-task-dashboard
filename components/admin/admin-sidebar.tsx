@@ -53,7 +53,7 @@ export function AdminSidebar({ activeMenu, onMenuChange }: SidebarProps) {
                   : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
               )}
             >
-              <Icon className="h-4.5 w-4.5" />
+              <Icon className="h-[18px] w-[18px]" />
               {item.label}
             </button>
           )

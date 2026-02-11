@@ -79,6 +79,31 @@ export interface StaffTask {
   deadlineMinutes?: number
 }
 
+// Operator Detail types
+export interface OperatorTask {
+  id: string
+  title: string
+  dueDate: string
+  isCompleted: boolean
+  completedAt?: string
+}
+
+export interface OperatorTrackStaff {
+  id: string
+  name: string
+  taskCompletionRate: number
+  taskCompleted: number
+  taskTotal: number
+  unreadMessages: number
+  missedRound?: string
+}
+
+export interface OperatorTrackDetail {
+  trackId: string
+  trackName: string
+  staff: OperatorTrackStaff[]
+}
+
 // -- Admin Dashboard Home Data --
 
 export const mockOperators: OperatorCard[] = [
@@ -131,6 +156,70 @@ export const mockTracks: TrackCard[] = [
     isOwned: false,
   },
 ]
+
+// -- Operator Detail Data --
+
+export const mockOperatorTasks: Record<string, OperatorTask[]> = {
+  op1: [
+    { id: 'ot1', title: 'AI 7기 중간 평가 기준 수립', dueDate: '2/10', isCompleted: true, completedAt: '2/9 17:00' },
+    { id: 'ot2', title: '멘토 일정 조율', dueDate: '2/12', isCompleted: false },
+    { id: 'ot3', title: '학관매 주간 미팅 준비', dueDate: '2/10', isCompleted: true, completedAt: '2/10 09:00' },
+    { id: 'ot4', title: 'BE 5기 챕터2 커리큘럼 검토', dueDate: '2/11', isCompleted: false },
+    { id: 'ot5', title: 'AI 7기 중간 평가 준비', dueDate: '2/10', isCompleted: false },
+    { id: 'ot6', title: '수강생 출결 리포트 작성', dueDate: '2/9', isCompleted: true, completedAt: '2/9 16:30' },
+    { id: 'ot7', title: '교육장 시설 점검 보고', dueDate: '2/8', isCompleted: true, completedAt: '2/8 18:00' },
+    { id: 'ot8', title: '주간 운영 회의 참석', dueDate: '2/10', isCompleted: true, completedAt: '2/10 11:00' },
+    { id: 'ot9', title: '학관매 평가 기준 초안 작성', dueDate: '2/7', isCompleted: true, completedAt: '2/7 15:00' },
+    { id: 'ot10', title: '수강생 만족도 설문 취합', dueDate: '2/6', isCompleted: true, completedAt: '2/6 17:00' },
+    { id: 'ot11', title: '팀 재편성 계획서 작성', dueDate: '2/6', isCompleted: true, completedAt: '2/6 14:00' },
+    { id: 'ot12', title: 'AI 7기 OT 자료 준비', dueDate: '2/5', isCompleted: true, completedAt: '2/5 16:00' },
+    { id: 'ot13', title: '긴급 이슈 대응 가이드 작성', dueDate: '2/5', isCompleted: true, completedAt: '2/5 11:00' },
+    { id: 'ot14', title: 'BE 5기 멘토링 매칭', dueDate: '2/4', isCompleted: true, completedAt: '2/4 15:00' },
+    { id: 'ot15', title: '교육 콘텐츠 업데이트', dueDate: '2/4', isCompleted: true, completedAt: '2/4 17:00' },
+    { id: 'ot16', title: '학관매 온보딩 가이드 업데이트', dueDate: '2/3', isCompleted: true, completedAt: '2/3 16:00' },
+    { id: 'ot17', title: '이전 기수 데이터 정리', dueDate: '2/3', isCompleted: true, completedAt: '2/3 14:00' },
+    { id: 'ot18', title: '운영 매뉴얼 검토', dueDate: '2/2', isCompleted: true, completedAt: '2/2 17:00' },
+    { id: 'ot19', title: '예산 정산 보고', dueDate: '2/2', isCompleted: true, completedAt: '2/2 15:00' },
+    { id: 'ot20', title: '월간 운영 보고서 작성', dueDate: '2/1', isCompleted: true, completedAt: '2/1 18:00' },
+  ],
+  op2: [
+    { id: 'ot21', title: 'AI 8기 OT 준비', dueDate: '2/15', isCompleted: false },
+    { id: 'ot22', title: '학관매 면접 진행', dueDate: '2/12', isCompleted: true, completedAt: '2/12 15:00' },
+    { id: 'ot23', title: 'AI 8기 커리큘럼 확정', dueDate: '2/10', isCompleted: true, completedAt: '2/10 14:00' },
+  ],
+}
+
+export const mockOperatorTrackDetails: Record<string, OperatorTrackDetail[]> = {
+  op1: [
+    {
+      trackId: 'track1',
+      trackName: 'AI 트랙 7기',
+      staff: [
+        { id: 'staff1', name: '김학관', taskCompletionRate: 92, taskCompleted: 11, taskTotal: 12, unreadMessages: 2 },
+        { id: 'staff2', name: '이학관', taskCompletionRate: 88, taskCompleted: 8, taskTotal: 10, unreadMessages: 0, missedRound: '오전 팀순회' },
+        { id: 'staff3', name: '박학관', taskCompletionRate: 65, taskCompleted: 7, taskTotal: 10, unreadMessages: 3 },
+      ],
+    },
+    {
+      trackId: 'track2',
+      trackName: 'BE 트랙 5기',
+      staff: [
+        { id: 'staff4', name: '정학관', taskCompletionRate: 90, taskCompleted: 9, taskTotal: 10, unreadMessages: 1 },
+        { id: 'staff5', name: '한학관', taskCompletionRate: 85, taskCompleted: 8, taskTotal: 10, unreadMessages: 0 },
+      ],
+    },
+  ],
+  op2: [
+    {
+      trackId: 'track3',
+      trackName: 'AI 트랙 8기',
+      staff: [
+        { id: 'staff6', name: '최학관', taskCompletionRate: 87, taskCompleted: 7, taskTotal: 8, unreadMessages: 1 },
+        { id: 'staff7', name: '강학관', taskCompletionRate: 82, taskCompleted: 9, taskTotal: 11, unreadMessages: 0 },
+      ],
+    },
+  ],
+}
 
 // -- Track Detail Dashboard Data --
 

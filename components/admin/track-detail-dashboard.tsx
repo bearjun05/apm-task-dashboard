@@ -54,7 +54,7 @@ export function TrackDetailDashboard() {
               className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               aria-label="알림"
             >
-              <Bell className="h-4.5 w-4.5" />
+              <Bell className="h-[18px] w-[18px]" />
             </button>
           </div>
         </header>
@@ -157,7 +157,7 @@ export function TrackDetailDashboard() {
 
                   <button
                     type="button"
-                    onClick={() => navigateTo('staff-detail', undefined, staff.id)}
+                    onClick={() => navigateTo('staff-detail', { staffId: staff.id })}
                     className="mt-4 w-full rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
                   >
                     {'상세보기'}

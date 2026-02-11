@@ -125,7 +125,6 @@ function IssueModal({
     if (!reply.trim()) return
     addIssueReply(issue.id, reply.trim(), status, assignee || undefined)
     setReply('')
-    onClose()
   }
 
   return (
@@ -171,6 +170,26 @@ function IssueModal({
             {issue.content}
           </div>
         </div>
+
+        {/* Existing replies */}
+        {issue.replies.length > 0 && (
+          <div className="border-b border-border px-5 py-4">
+            <h4 className="mb-3 text-sm font-medium text-muted-foreground">
+              {'이전 답변 ('}{issue.replies.length}{')'}
+            </h4>
+            <div className="space-y-2">
+              {issue.replies.map((r) => (
+                <div key={r.id} className="rounded-md bg-primary/5 p-3 text-sm">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">{r.authorName}</span>
+                    <span>{r.timestamp}</span>
+                  </div>
+                  <p className="mt-1 text-foreground">{r.content}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Reply */}
         <div className="space-y-3 px-5 py-4">
@@ -286,7 +305,7 @@ export function StaffDetailPage() {
           className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           aria-label="알림"
         >
-          <Bell className="h-4.5 w-4.5" />
+          <Bell className="h-[18px] w-[18px]" />
         </button>
       </header>
 
@@ -298,7 +317,7 @@ export function StaffDetailPage() {
           <section className="col-span-4 rounded-lg border border-border bg-card p-5">
             <div className="mb-4">
               <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                <MessageSquare className="h-4.5 w-4.5 text-primary" />
+                <MessageSquare className="h-[18px] w-[18px] text-primary" />
                 {'Task 대화'}
               </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">{'안읽은 대화 우선'}</p>
@@ -315,7 +334,7 @@ export function StaffDetailPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-foreground">
                       {'['}{conv.time}{'] '}{conv.taskTitle}
-                      {conv.isCompleted && <span className="ml-1 text-success">{'done'}</span>}
+                      {conv.isCompleted && <CheckCircle2 className="ml-1.5 inline h-3.5 w-3.5 text-success" />}
                     </span>
                   </div>
                   {conv.newMessageCount > 0 && (
@@ -333,7 +352,7 @@ export function StaffDetailPage() {
           {/* Issues / Requests */}
           <section className="col-span-6 rounded-lg border border-border bg-card p-5">
             <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-              <Bell className="h-4.5 w-4.5 text-primary" />
+              <Bell className="h-[18px] w-[18px] text-primary" />
               {'요청/이슈'}
             </h2>
 
@@ -401,7 +420,7 @@ export function StaffDetailPage() {
         {/* Bottom: Task List (full width) */}
         <section className="rounded-lg border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-            <ClipboardList className="h-4.5 w-4.5 text-primary" />
+            <ClipboardList className="h-[18px] w-[18px] text-primary" />
             {'업무 리스트'}
           </h2>
 
@@ -436,9 +455,9 @@ export function StaffDetailPage() {
               >
                 <div className="flex items-center gap-3">
                   {task.isCompleted ? (
-                    <CheckCircle2 className="h-4.5 w-4.5 text-success" />
+                    <CheckCircle2 className="h-[18px] w-[18px] text-success" />
                   ) : (
-                    <XCircle className="h-4.5 w-4.5 text-foreground" />
+                    <XCircle className="h-[18px] w-[18px] text-foreground" />
                   )}
                   <span
                     className={cn(

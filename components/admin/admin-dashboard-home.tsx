@@ -47,9 +47,11 @@ export function AdminDashboardHome() {
             <h2 className="mb-4 text-sm font-medium text-muted-foreground">{'담당 운영매'}</h2>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {operators.map((op) => (
-                <div
+                <button
                   key={op.id}
-                  className="rounded-lg border border-border bg-card p-5 transition-shadow hover:shadow-md"
+                  type="button"
+                  onClick={() => navigateTo('operator-detail', { operatorId: op.id })}
+                  className="rounded-lg border border-border bg-card p-5 text-left transition-shadow hover:shadow-md"
                 >
                   <h3 className="text-base font-semibold text-foreground">{op.displayName}</h3>
 
@@ -80,7 +82,7 @@ export function AdminDashboardHome() {
                       ))}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </section>
@@ -99,7 +101,7 @@ export function AdminDashboardHome() {
               <button
                 key={track.id}
                 type="button"
-                onClick={() => navigateTo('track-detail', track.id)}
+                onClick={() => navigateTo('track-detail', { trackId: track.id })}
                 className={`rounded-lg border bg-card p-5 text-left transition-shadow hover:shadow-md ${
                   track.isOwned ? 'border-primary border-2' : 'border-border'
                 }`}
