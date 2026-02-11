@@ -6,7 +6,6 @@ import { mockCalendarEvents, mockChapterEvents, mockTodayTasks } from '@/lib/moc
 import type { CalendarEvent } from '@/lib/types'
 import { Calendar, ChevronRight, X, Plus } from 'lucide-react'
 import { useDashboardStore } from '@/lib/store'
-import { useEffect } from 'react'
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -168,13 +167,9 @@ function DateModal({ date, events, onClose }: DateModalProps) {
 export function WeekChapterCalendar() {
   const [view, setView] = useState<'week' | 'chapter'>('week')
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [today, setToday] = useState<Date | null>(null)
 
-  useEffect(() => {
-    setToday(new Date())
-  }, [])
-
-  const safeToday = today ?? new Date(2026, 1, 9) // fallback for SSR, will be replaced on mount
+  // Use the same pinned date as mock-data.ts so that event dates align with "today"
+  const safeToday = new Date(2026, 1, 11, 9, 0, 0)
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(safeToday, i))
 
   const chapterStart = addDays(safeToday, -3)

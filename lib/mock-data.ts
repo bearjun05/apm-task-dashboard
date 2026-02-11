@@ -1,7 +1,10 @@
 import type { Task, Notice, Issue, CalendarEvent } from './types'
 
-const today = new Date()
-const todayStr = today.toISOString().split('T')[0]
+// Use a fixed "today" so that SSR and client produce identical markup.
+// The value is 2026-02-11 in the local timezone, which avoids Date.now()
+// hydration mismatches while still looking realistic in the UI.
+const today = new Date(2026, 1, 11, 9, 0, 0) // months are 0-indexed
+const todayStr = '2026-02-11'
 
 function addDays(date: Date, days: number): string {
   const d = new Date(date)
