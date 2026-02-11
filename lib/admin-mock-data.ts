@@ -104,6 +104,60 @@ export interface OperatorTrackDetail {
   staff: OperatorTrackStaff[]
 }
 
+// -- Kanban Board types --
+
+export type KanbanStatus = 'waiting' | 'in-progress' | 'done'
+
+export interface KanbanCard {
+  id: string
+  trackName: string
+  trackColor: string // hex color
+  operatorName: string
+  title: string
+  content: string
+  timeAgo: string
+  createdAt: string
+  isUrgent: boolean
+  status: KanbanStatus
+  messages: StaffMessage[]
+}
+
+export interface ChatMessage {
+  id: string
+  authorName: string
+  trackName: string
+  timeAgo: string
+  isUrgent: boolean
+  taskTitle?: string
+  taskContent?: string
+  message: string
+  relatedKanbanId?: string
+}
+
+export interface PlannerTrackCard {
+  id: string
+  name: string
+  period: string
+  color: string
+  completionRate: number
+  issueSummary: {
+    total: number
+    waiting: number
+    inProgress: number
+    done: number
+  }
+  staffCount: number
+  studentCount: number
+  tutorCount: number
+  operator?: {
+    name: string
+    taskCompletionRate: number
+    issueResolutionRate: number
+    issueResolved: number
+    issueTotal: number
+  }
+}
+
 // -- Admin Dashboard Home Data --
 
 export const mockOperators: OperatorCard[] = [
@@ -345,5 +399,220 @@ export const mockStaffTasks: StaffTask[] = [
     time: '14:00',
     isCompleted: false,
     deadlineMinutes: 60,
+  },
+]
+
+// -- Kanban Board Data --
+
+export const mockKanbanCards: KanbanCard[] = [
+  {
+    id: 'kb1',
+    trackName: 'AI 7기',
+    trackColor: '#3B82F6',
+    operatorName: '이운영',
+    title: '중간 평가 준비 요청',
+    content: '중간 평가 일정을 확인해주세요. 다음 주 목요일로 진행 예정입니다.',
+    timeAgo: '2시간 전',
+    createdAt: '2026-02-10 08:30',
+    isUrgent: false,
+    status: 'waiting',
+    messages: [
+      { id: 'kbm1', authorName: '이운영', content: '확인 부탁드립니다.', timestamp: '08:30', isSelf: false },
+      { id: 'kbm2', authorName: '나', content: '확인했습니다.', timestamp: '09:00', isSelf: true },
+    ],
+  },
+  {
+    id: 'kb2',
+    trackName: 'BE 5기',
+    trackColor: '#10B981',
+    operatorName: '김운영',
+    title: '긴급이슈 확인요청',
+    content: '수강생 3명이 동시에 퇴소 의사를 밝혔습니다. 긴급 면담이 필요합니다.',
+    timeAgo: '5분 전',
+    createdAt: '2026-02-11 09:55',
+    isUrgent: true,
+    status: 'waiting',
+    messages: [
+      { id: 'kbm3', authorName: '김운영', content: '긴급하게 확인 부탁드립니다.', timestamp: '09:55', isSelf: false },
+    ],
+  },
+  {
+    id: 'kb3',
+    trackName: 'AI 8기',
+    trackColor: '#8B5CF6',
+    operatorName: '이운영',
+    title: '자료 업데이트',
+    content: 'AI 8기 OT 자료를 최신 버전으로 업데이트해야 합니다.',
+    timeAgo: '1시간 전',
+    createdAt: '2026-02-11 09:00',
+    isUrgent: false,
+    status: 'waiting',
+    messages: [],
+  },
+  {
+    id: 'kb4',
+    trackName: 'BE 5기',
+    trackColor: '#10B981',
+    operatorName: '김운영',
+    title: '자료 수정 진행중',
+    content: 'BE 5기 챕터3 실습 자료에 오류가 있어 수정 중입니다.',
+    timeAgo: '1시간 전',
+    createdAt: '2026-02-11 09:00',
+    isUrgent: false,
+    status: 'in-progress',
+    messages: [
+      { id: 'kbm4', authorName: '김운영', content: '자료 오류 수정 중입니다.', timestamp: '09:00', isSelf: false },
+    ],
+  },
+  {
+    id: 'kb5',
+    trackName: 'AI 8기',
+    trackColor: '#8B5CF6',
+    operatorName: '이운영',
+    title: '멘토 일정 조율 완료',
+    content: 'AI 8기 멘토링 일정을 모두 확정했습니다.',
+    timeAgo: '어제',
+    createdAt: '2026-02-10 15:00',
+    isUrgent: false,
+    status: 'done',
+    messages: [
+      { id: 'kbm5', authorName: '이운영', content: '일정 확정했습니다.', timestamp: '15:00', isSelf: false },
+      { id: 'kbm6', authorName: '나', content: '수고하셨습니다.', timestamp: '15:30', isSelf: true },
+    ],
+  },
+  {
+    id: 'kb6',
+    trackName: 'AI 7기',
+    trackColor: '#3B82F6',
+    operatorName: '이운영',
+    title: '교육 자료 준비 완료',
+    content: 'AI 7기 다음 주 강의 교육 자료 준비를 완료했습니다.',
+    timeAgo: '어제',
+    createdAt: '2026-02-10 17:00',
+    isUrgent: false,
+    status: 'done',
+    messages: [],
+  },
+]
+
+// -- Chat Messages --
+
+export const mockChatMessages: ChatMessage[] = [
+  {
+    id: 'chat1',
+    authorName: '이운영',
+    trackName: 'AI 7기',
+    timeAgo: '5분 전',
+    isUrgent: false,
+    taskTitle: '중간 평가 준비',
+    taskContent: '중간 평가 일정을 확인해주세요. 다음 주 목요일로 진행 예정입니다.',
+    message: '확인 부탁드립니다. 다음 주로 예정되어 있습니다.',
+    relatedKanbanId: 'kb1',
+  },
+  {
+    id: 'chat2',
+    authorName: '김운영',
+    trackName: 'BE 5기',
+    timeAgo: '1시간 전',
+    isUrgent: true,
+    message: '긴급 요청사항이 있습니다',
+    relatedKanbanId: 'kb2',
+  },
+  {
+    id: 'chat3',
+    authorName: '이운영',
+    trackName: 'AI 8기',
+    timeAgo: '2시간 전',
+    isUrgent: false,
+    taskTitle: '자료 업데이트',
+    taskContent: 'AI 8기 OT 자료를 최신 버전으로 업데이트해야 합니다.',
+    message: 'OT 자료 업데이트 관련 확인 부탁드립니다.',
+    relatedKanbanId: 'kb3',
+  },
+  {
+    id: 'chat4',
+    authorName: '김운영',
+    trackName: 'BE 5기',
+    timeAgo: '3시간 전',
+    isUrgent: false,
+    taskTitle: '멘토링 피드백',
+    taskContent: '이번 주 멘토링 세션에 대한 피드백입니다.',
+    message: '멘토링 피드백 정리 완료했습니다.',
+  },
+  {
+    id: 'chat5',
+    authorName: '이운영',
+    trackName: 'AI 7기',
+    timeAgo: '4시간 전',
+    isUrgent: false,
+    message: '오전 팀순회 보고 올립니다.',
+  },
+  {
+    id: 'chat6',
+    authorName: '김운영',
+    trackName: 'BE 5기',
+    timeAgo: '5시간 전',
+    isUrgent: false,
+    message: '수강생 출결 현황 공유합니다.',
+  },
+  {
+    id: 'chat7',
+    authorName: '이운영',
+    trackName: 'AI 8기',
+    timeAgo: '6시간 전',
+    isUrgent: false,
+    message: 'AI 8기 커리큘럼 초안 작성했습니다.',
+  },
+]
+
+// -- Planner Track Cards --
+
+export const mockPlannerTracks: PlannerTrackCard[] = [
+  {
+    id: 'track1',
+    name: 'AI 트랙 7기',
+    period: '2026.02.01 ~ 2026.07.31',
+    color: '#3B82F6',
+    completionRate: 92,
+    issueSummary: { total: 5, waiting: 2, inProgress: 1, done: 2 },
+    staffCount: 3,
+    studentCount: 70,
+    tutorCount: 2,
+    operator: {
+      name: '이운영',
+      taskCompletionRate: 85,
+      issueResolutionRate: 95,
+      issueResolved: 19,
+      issueTotal: 20,
+    },
+  },
+  {
+    id: 'track2',
+    name: 'BE 트랙 5기',
+    period: '2026.01.01 ~ 2026.06.30',
+    color: '#10B981',
+    completionRate: 88,
+    issueSummary: { total: 3, waiting: 1, inProgress: 1, done: 1 },
+    staffCount: 2,
+    studentCount: 50,
+    tutorCount: 1,
+    operator: {
+      name: '김운영',
+      taskCompletionRate: 90,
+      issueResolutionRate: 88,
+      issueResolved: 15,
+      issueTotal: 17,
+    },
+  },
+  {
+    id: 'track3',
+    name: 'AI 트랙 8기',
+    period: '2026.03.01 ~ 2026.08.31',
+    color: '#8B5CF6',
+    completionRate: 85,
+    issueSummary: { total: 2, waiting: 1, inProgress: 0, done: 1 },
+    staffCount: 2,
+    studentCount: 40,
+    tutorCount: 1,
   },
 ]

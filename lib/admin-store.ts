@@ -9,6 +9,10 @@ import type {
   StaffMessage,
   OperatorTask,
   OperatorTrackDetail,
+  KanbanCard,
+  KanbanStatus,
+  ChatMessage,
+  PlannerTrackCard,
 } from './admin-mock-data'
 import {
   mockOperators,
@@ -19,6 +23,9 @@ import {
   mockStaffTasks,
   mockOperatorTasks,
   mockOperatorTrackDetails,
+  mockKanbanCards,
+  mockChatMessages,
+  mockPlannerTracks,
 } from './admin-mock-data'
 
 interface AdminState {
@@ -32,6 +39,16 @@ interface AdminState {
   operatorTasks: Record<string, OperatorTask[]>
   operatorTrackDetails: Record<string, OperatorTrackDetail[]>
   userRole: 'operator_manager' | 'operator'
+
+  // Kanban
+  kanbanCards: KanbanCard[]
+  chatMessages: ChatMessage[]
+  plannerTracks: PlannerTrackCard[]
+
+  // Kanban actions
+  moveKanbanCard: (cardId: string, newStatus: KanbanStatus) => void
+  updateKanbanCardStatus: (cardId: string, newStatus: KanbanStatus) => void
+  addKanbanReply: (cardId: string, content: string) => void
 
   // Staff detail actions
   addConversationMessage: (convId: string, content: string) => void
@@ -49,6 +66,46 @@ export const useAdminStore = create<AdminState>((set) => ({
   operatorTasks: mockOperatorTasks,
   operatorTrackDetails: mockOperatorTrackDetails,
   userRole: 'operator_manager',
+
+  kanbanCards: mockKanbanCards,
+  chatMessages: mockChatMessages,
+  plannerTracks: mockPlannerTracks,
+
+  moveKanbanCard: (cardId, newStatus) =>
+    set((state) => ({
+      kanbanCards: state.kanbanCards.map((c) =>
+        c.id === cardId ? { ...c, status: newStatus } : c,
+      ),
+    })),
+
+  updateKanbanCardStatus: (cardId, newStatus) =>
+    set((state) => ({
+      kanbanCards: state.kanbanCards.map((c) =>
+        c.id === cardId ? { ...c, status: newStatus } : c,
+      ),
+    })),
+
+  addKanbanReply: (cardId, content) =>
+    set((state) => ({
+      kanbanCards: state.kanbanCards.map((c) =>
+        c.id === cardId
+          ? {
+              ...c,
+              status: c.status === 'waiting' ? 'in-progress' as KanbanStatus : c.status,
+              messages: [
+                ...c.messages,
+                {
+                  id: `kbr-${Date.now()}`,
+                  authorName: '나',
+                  content,
+                  timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+                  isSelf: true,
+                } as StaffMessage,
+              ],
+            }
+          : c,
+      ),
+    })),
 
   addConversationMessage: (convId, content) =>
     set((state) => ({
