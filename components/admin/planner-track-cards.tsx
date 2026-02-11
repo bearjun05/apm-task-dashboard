@@ -29,12 +29,12 @@ export function PlannerTrackCards() {
         </span>
       </h2>
 
-      <div className="flex gap-3 overflow-x-auto pb-2">
+      <div className="space-y-3">
         {plannerTracks.map((track) => (
           <Link
             key={track.id}
             href={`/admin/tracks/${track.id}`}
-            className="flex min-w-[280px] max-w-[340px] shrink-0 flex-col rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-md"
+            className="flex flex-col rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-md"
             style={{ borderLeftWidth: '3px', borderLeftColor: track.color }}
           >
             {/* Header */}
