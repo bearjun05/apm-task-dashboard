@@ -54,14 +54,14 @@ export function AdminDashboardHome() {
       </header>
 
       {/* Body */}
-      <main className="flex-1 space-y-8 overflow-y-auto p-6">
+      <main className="flex-1 space-y-6 overflow-y-auto p-6">
         {/* Section 1: Kanban Board */}
         <KanbanBoard />
 
-        {/* Section 2: Operator Chat */}
+        {/* Section 2: Operator Chat -- primary section, large */}
         <OperatorChatSection />
 
-        {/* Section 3: Track Cards */}
+        {/* Section 3: Track Cards -- compact horizontal strip */}
         <PlannerTrackCards />
       </main>
     </div>

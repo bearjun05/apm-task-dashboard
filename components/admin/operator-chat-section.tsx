@@ -115,7 +115,7 @@ export function OperatorChatSection({
 }) {
   const { chatMessages, plannerTracks } = useAdminStore()
   const [activeTrack, setActiveTrack] = useState<string>('all')
-  const [visibleCount, setVisibleCount] = useState(3)
+  const [visibleCount, setVisibleCount] = useState(10)
 
   const trackTabs = [
     { id: 'all', label: '전체 메시지' },
@@ -157,14 +157,18 @@ export function OperatorChatSection({
       </div>
 
       {/* Chat Cards */}
-      <div className="max-h-[200px] space-y-2.5 overflow-y-auto">
-        {displayed.map((msg) => (
-          <ChatCard
-            key={msg.id}
-            msg={msg}
-            onViewDetail={(id) => onViewKanbanDetail?.(id)}
-          />
-        ))}
+      <div className="max-h-[520px] space-y-2.5 overflow-y-auto rounded-lg border border-border bg-secondary/20 p-3">
+        {displayed.length === 0 ? (
+          <p className="py-10 text-center text-sm text-muted-foreground">{'메시지가 없습니다.'}</p>
+        ) : (
+          displayed.map((msg) => (
+            <ChatCard
+              key={msg.id}
+              msg={msg}
+              onViewDetail={(id) => onViewKanbanDetail?.(id)}
+            />
+          ))
+        )}
       </div>
 
       {remaining > 0 && (
