@@ -15,87 +15,103 @@ function ChatCard({
   const [expanded, setExpanded] = useState(false)
   const [replying, setReplying] = useState(false)
   const [replyText, setReplyText] = useState('')
+  const [hovering, setHovering] = useState(false)
 
   return (
-    <div className="relative rounded-md border border-border bg-card px-3 py-2">
-      {/* Row 1: Author + time + urgent + message in one compact line */}
-      <div className="flex items-start gap-2">
-        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-medium text-foreground">
+    <div
+      className="relative rounded-lg border border-border bg-card px-3.5 py-2.5 transition-colors hover:bg-secondary/30"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
+      {/* Main row: avatar + content + actions on same line */}
+      <div className="flex items-start gap-2.5">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-foreground">
           {msg.authorName.charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-semibold text-foreground">{msg.authorName}</span>
-            <span className="text-[10px] text-muted-foreground">{msg.trackName}</span>
-            <span className="text-[10px] text-muted-foreground">{msg.timeAgo}</span>
-            {msg.isUrgent && <AlertTriangle className="h-3 w-3 shrink-0 text-destructive" />}
+          {/* Name row */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-foreground">{msg.authorName}</span>
+            <span className="rounded bg-secondary px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+              {msg.trackName}
+            </span>
+            {msg.isUrgent && (
+              <span className="flex items-center gap-0.5 rounded bg-destructive/10 px-1.5 py-0.5 text-xs font-medium text-destructive">
+                <AlertTriangle className="h-3 w-3" />
+                {'긴급'}
+              </span>
+            )}
+            <span className="ml-auto text-xs text-muted-foreground">{msg.timeAgo}</span>
           </div>
-          <p className="mt-0.5 text-xs leading-normal text-foreground">{msg.message}</p>
+          {/* Message -- single line with truncation unless task is expanded */}
+          <p className="mt-0.5 text-sm leading-snug text-foreground">{msg.message}</p>
         </div>
       </div>
 
-      {/* Task reference -- inline compact */}
+      {/* Task reference -- only shown if task exists, collapsed by default */}
       {msg.taskTitle && (
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="mt-1.5 flex w-full items-center gap-1 rounded border border-border bg-secondary/40 px-2 py-1 text-left text-[11px] text-muted-foreground transition-colors hover:bg-secondary"
+          className="ml-[38px] mt-1.5 flex w-[calc(100%-38px)] items-center gap-1 rounded border border-border bg-secondary/40 px-2 py-1 text-left text-xs text-muted-foreground transition-colors hover:bg-secondary"
         >
-          <span className="flex-1 truncate">{'Task: '}{msg.taskTitle}</span>
-          {expanded ? <ChevronUp className="h-2.5 w-2.5 shrink-0" /> : <ChevronDown className="h-2.5 w-2.5 shrink-0" />}
+          <span className="flex-1 truncate font-medium">{'Task: '}{msg.taskTitle}</span>
+          {expanded ? <ChevronUp className="h-3 w-3 shrink-0" /> : <ChevronDown className="h-3 w-3 shrink-0" />}
         </button>
       )}
       {expanded && msg.taskContent && (
-        <div className="mt-1 rounded bg-secondary/30 px-2 py-1.5 text-[11px] leading-normal text-muted-foreground">
+        <div className="ml-[38px] mt-1 w-[calc(100%-38px)] rounded bg-secondary/30 px-2 py-1.5 text-xs leading-relaxed text-muted-foreground">
           {msg.taskContent}
         </div>
       )}
 
-      {/* Actions */}
-      <div className="mt-1.5 flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={() => setReplying(!replying)}
-          className="rounded bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground transition-colors hover:bg-secondary/80"
-        >
-          {'답장'}
-        </button>
-        {msg.relatedKanbanId && (
+      {/* Hover actions -- only visible on hover to keep card compact */}
+      {(hovering || replying) && (
+        <div className="ml-[38px] mt-1.5 flex items-center gap-2">
           <button
             type="button"
-            onClick={() => onViewDetail(msg.relatedKanbanId!)}
-            className="rounded bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground transition-colors hover:bg-secondary/80"
+            onClick={() => setReplying(!replying)}
+            className="rounded bg-secondary px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary/80"
           >
-            {'상세보기'}
+            {'답장'}
           </button>
-        )}
-      </div>
+          {msg.relatedKanbanId && (
+            <button
+              type="button"
+              onClick={() => onViewDetail(msg.relatedKanbanId!)}
+              className="rounded bg-secondary px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary/80"
+            >
+              {'상세보기'}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Inline reply */}
       {replying && (
-        <div className="mt-1.5 flex gap-1.5">
+        <div className="ml-[38px] mt-1.5 flex gap-2">
           <input
             type="text"
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder="메시지 입력..."
-            className="flex-1 rounded border border-border bg-secondary/50 px-2 py-1 text-[11px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+            className="flex-1 rounded-md border border-border bg-secondary/50 px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
           />
           <button
             type="button"
             disabled={!replyText.trim()}
             onClick={() => { setReplyText(''); setReplying(false) }}
-            className="flex items-center gap-0.5 rounded bg-primary px-2 py-1 text-[11px] font-medium text-primary-foreground disabled:opacity-50"
+            className="flex items-center gap-1 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50"
           >
-            <Send className="h-2.5 w-2.5" />
+            <Send className="h-3 w-3" />
             {'전송'}
           </button>
           <button
             type="button"
             onClick={() => { setReplying(false); setReplyText('') }}
-            className="rounded p-1 text-muted-foreground hover:bg-secondary"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-secondary"
           >
-            <X className="h-2.5 w-2.5" />
+            <X className="h-3 w-3" />
           </button>
         </div>
       )}
@@ -152,7 +168,7 @@ export function OperatorChatSection({
       </div>
 
       {/* Chat Cards */}
-      <div className="max-h-[420px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-secondary/20 p-2">
+      <div className="max-h-[480px] space-y-2 overflow-y-auto rounded-lg border border-border bg-secondary/20 p-2.5">
         {displayed.length === 0 ? (
           <p className="py-10 text-center text-sm text-muted-foreground">{'메시지가 없습니다.'}</p>
         ) : (
